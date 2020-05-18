@@ -1,0 +1,71 @@
+.business-control {
+    -fx-padding:          10;
+    -base-color:          rgb(255, 201, 104);
+    -fx-background-color: rgb(255, 255, 250);
+}
+
+.business-control .drawing-pane {
+    -fx-background-color: transparent;
+}
+
+.business-control .editable-node {
+    -fx-font-family:      'Lato Regular';
+    -fx-font-size:        14;
+    -fx-text-fill:        derive(-base-color, -30%);
+    -fx-prompt-text-fill: derive(-base-color, 40%);
+}
+
+.business-control .editable-node:focused {
+    -fx-prompt-text-fill: derive(-base-color, 40%);
+    -fx-highlight-fill:   derive(-base-color, -30%);
+}
+
+.business-control:invalid .editable-node {
+    -fx-font-family: 'Lato Light';
+    -fx-text-fill:   red;
+}
+
+.business-control:mandatory .editable-node {
+    -fx-background-color: white;
+    -fx-border-color:     derive(-base-color, -30%);
+    -fx-border-width:     2;
+    -fx-border-radius:    4;
+}
+
+.business-control:mandatory .editable-node:focused {
+    -fx-background-color: white;
+    -fx-border-color:     derive(-base-color, -30%);
+    -fx-border-width:     2;
+    -fx-border-radius:    4;
+}
+
+.business-control .read-only-node {
+    -fx-font-family:     'DS-Digital';
+    -fx-pref-width:      80;
+    -fx-max-width:       1024;
+    -fx-alignment:       center;
+    -fx-content-display: text-only;
+    -fx-font-size:       22;
+    -fx-text-fill:       rgb(139, 86, 70);
+}
+
+.business-control .chooser-button {
+    -fx-font-family:      'FontAwesome';
+    -fx-border-color:     transparent;
+    -fx-background-color: transparent;
+    -fx-min-width:        26;
+    -fx-min-height:       26;
+    -fx-font-size:        14;
+    -fx-text-fill:        derive(-base-color, -30%);
+    -fx-padding:          5;
+    -fx-content-display:  text-only;
+    -fx-cursor:           hand;
+}
+
+.business-control .chooser-button:hover {
+    -fx-background-color:  derive(-base-color, 70%);
+    -fx-background-radius: 1024;
+    -fx-background-insets: 4;
+}
+
+
