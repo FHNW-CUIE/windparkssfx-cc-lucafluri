@@ -53,6 +53,10 @@ public class BusinessControl extends Control {
 
 
     // Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
+    //    USAGE:
+    //      System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
+    //      System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
+
     public static JSONObject getGeocodingJSON(String query, Boolean reverse) throws IOException {
         URL urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
         String readLine = null;
@@ -140,7 +144,7 @@ public class BusinessControl extends Control {
     }
 
     //todo: durch geeignete Konvertierungslogik ersetzen
-    private void addValueChangeListener() throws IOException {
+    private void addValueChangeListener() {
         userFacingText.addListener((observable, oldValue, userInput) -> {
             if (isMandatory() && (userInput == null || userInput.isEmpty())) {
                 setInvalid(true);
