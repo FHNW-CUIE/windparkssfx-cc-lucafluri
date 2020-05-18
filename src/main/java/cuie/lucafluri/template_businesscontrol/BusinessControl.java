@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.regex.Pattern;
 
 //todo: umbenennen
 public class BusinessControl extends Control {
@@ -55,37 +54,6 @@ public class BusinessControl extends Control {
     //   -> schon mal Längen-/Breitengrad eingeben
     //
     //
-
-
-    // Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
-    //    USAGE:
-    //      System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
-    //      System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
-
-    public static JSONObject getGeocodingJSON(String query, Boolean reverse) throws IOException {
-        URL urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
-        String readLine = null;
-        HttpURLConnection connection = (HttpURLConnection) urlForGetRequest.openConnection();
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            while ((readLine = in .readLine()) != null) {
-                response.append(readLine);
-            } in .close();
-            //JSON OBJECT
-            JSONObject json  = new JSONObject(response.toString());
-            JSONArray data = (JSONArray) json.get("data");
-            JSONObject first = (JSONObject) data.get(0);
-//            System.out.println("JSON String Result " + first.get("country"));
-            return json;
-        } else {
-            System.out.println("GET NOT WORKED");
-            return null;
-        }
-    }
 
 
 
@@ -197,6 +165,45 @@ public class BusinessControl extends Control {
     }
 
     //todo: Forgiving Format implementieren
+
+
+    /**
+     * Geocoding conversion.
+     *
+     * Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
+     *     USAGE:
+     *     System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
+     *     System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
+     * @param query     your query
+     * @param reverse   boolean whether you want to use reverse or forward conversion
+     * @return          JSONObject for further processing
+     * @throws IOException Exception if error should happen
+     */
+    public static JSONObject getGeocodingJSON(String query, Boolean reverse) throws IOException {
+        URL urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
+        String readLine = null;
+        HttpURLConnection connection = (HttpURLConnection) urlForGetRequest.openConnection();
+        connection.setRequestMethod("GET");
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            while ((readLine = in .readLine()) != null) {
+                response.append(readLine);
+            } in .close();
+            //JSON OBJECT
+            JSONObject json  = new JSONObject(response.toString());
+            JSONArray data = (JSONArray) json.get("data");
+            JSONObject first = (JSONObject) data.get(0);
+//            System.out.println("JSON String Result " + first.get("country"));
+            return json;
+        } else {
+            System.out.println("GET NOT WORKED");
+            return null;
+        }
+    }
+
 
     public void loadFonts(String... font){
         for(String f : font){
