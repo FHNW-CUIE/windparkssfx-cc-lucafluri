@@ -19,6 +19,35 @@ public class BusinessControl extends Control {
     private static final PseudoClass INVALID_CLASS   = PseudoClass.getPseudoClass("invalid");
 
 
+    // TODO 1:
+    //  alle Properties auflisten, die man verarbeiten will -> mit den getter/setters
+    //  -> Gemeinde, Kanton, Breite und Längengrade
+
+    // TODO 2:
+    //  Alles in einem BusinessControl, z.B. Breitengrad-Feld
+
+    // TODO 3:
+    //  forgiving format folgende Eingabe verarbeiten:
+    //  - möglich: 47°21'59.7"N 8°32'22.9"E
+    //  - möglich: 47.366584, 8.539701
+    //  - Checks ob Breiten-/Längengrade auch in den erlaubten Ranges sind
+
+    // TODO 4:
+    //  Idee: DropDown öffnet Karte, wo man die Position noch fein justieren kann
+    //  Nicht GoogleMaps, sondern OpenStreetMap
+
+    // TODO 5:
+    //  Mit API aus Längen-/Breitengrade Gemeinde und Kanton ermitteln:
+    //  https://positionstack.com/
+    //  https://nominatim.org/
+    //  https://osmnames.org/
+
+    //  Weitere Idee: z.B. wenn Benutzer einfach mal die Gemeinde eingibt
+    //   -> schon mal Längen-/Breitengrad eingeben
+    //
+    //
+
+
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
     static final String FORMATTED_INTEGER_PATTERN = "%,d";
 
