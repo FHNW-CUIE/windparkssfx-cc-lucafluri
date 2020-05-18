@@ -10,6 +10,8 @@ import javafx.scene.layout.VBox;
 
 import cuie.lucafluri.template_businesscontrol.BusinessControl;
 
+import java.io.IOException;
+
 class DemoPane extends BorderPane {
     private BusinessControl businessControl;
 
@@ -21,7 +23,7 @@ class DemoPane extends BorderPane {
 
     private PresentationModel model;
 
-    DemoPane(PresentationModel model) {
+    DemoPane(PresentationModel model) throws IOException {
         this.model = model;
 
         initializeControls();
@@ -30,7 +32,7 @@ class DemoPane extends BorderPane {
         setupBindings();
     }
 
-    private void initializeControls() {
+    private void initializeControls() throws IOException {
         setPadding(new Insets(10));
 
         businessControl = new BusinessControl();
