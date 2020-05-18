@@ -13,11 +13,10 @@ import cuie.lucafluri.template_businesscontrol.BusinessControl;
 class DemoPane extends BorderPane {
     private BusinessControl businessControl;
 
-    private Slider ageSlider;
-
-    private CheckBox  readOnlyBox;
-    private CheckBox  mandatoryBox;
-    private TextField labelField;
+    private TextField latitude;
+    private TextField longitude;
+    private TextField city;
+    private TextField canton;
 
     private PresentationModel model;
 
@@ -35,25 +34,20 @@ class DemoPane extends BorderPane {
 
         businessControl = new BusinessControl();
 
-        ageSlider = new Slider(0, 130, 0);
-
-        readOnlyBox = new CheckBox();
-        readOnlyBox.setSelected(false);
-
-        mandatoryBox = new CheckBox();
-        mandatoryBox.setSelected(true);
-
-        labelField = new TextField();
+        latitude = new TextField();
+        longitude = new TextField();
+        city = new TextField();
+        canton = new TextField();
     }
 
     private void layoutControls() {
         setCenter(businessControl);
         VBox box = new VBox(10,
-                            new Label("Business Control Properties"),
-                            new Label("Age")      , ageSlider,
-                            new Label("readOnly") , readOnlyBox,
-                            new Label("mandatory"), mandatoryBox,
-                            new Label("Label")    , labelField);
+                new Label("Business Control Properties"),
+                new Label("Latitude"), latitude,
+                new Label("Longitude"), longitude,
+                new Label("City"), city,
+                new Label("Canton"), canton);
         box.setPadding(new Insets(10));
         box.setSpacing(10);
         setRight(box);
@@ -63,17 +57,18 @@ class DemoPane extends BorderPane {
     }
 
     private void setupBindings() {
-        ageSlider.valueProperty()      .bindBidirectional(model.ageProperty());
-        labelField.textProperty()      .bindBidirectional(model.age_LabelProperty());
-        readOnlyBox.selectedProperty() .bindBidirectional(model.age_readOnlyProperty());
-        mandatoryBox.selectedProperty().bindBidirectional(model.age_mandatoryProperty());
+        // TODO: introduce bindBidirectional or setup value change listeners accordingly
+        latitude.textProperty().bind(model.pmLatitudeProperty().asString());
+        longitude.textProperty().bind(model.pmLongitudeProperty().asString());
 
+        city.textProperty().bindBidirectional(model.pmCityProperty());
+        canton.textProperty().bindBidirectional(model.pmCantonProperty());
 
         // TODO: dieses Binding wird dann vom oop2-Student erstellt... Hier nur für unser Testen verwenden
-        businessControl.latitudeProperty()    .bindBidirectional(model.ageProperty());
-        businessControl.labelProperty()    .bind(model.age_LabelProperty());
-        businessControl.readOnlyProperty() .bind(model.age_readOnlyProperty());
-        businessControl.mandatoryProperty().bind(model.age_mandatoryProperty());
+        businessControl.latitudeProperty().bindBidirectional(model.pmLatitudeProperty());
+        businessControl.longitudeProperty().bindBidirectional(model.pmLongitudeProperty());
+        businessControl.cityProperty().bindBidirectional(model.pmCityProperty());
+        businessControl.cantonProperty().bindBidirectional(model.pmCantonProperty());
     }
 
 }

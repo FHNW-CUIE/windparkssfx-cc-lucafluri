@@ -1,63 +1,77 @@
 package cuie.lucafluri.template_businesscontrol.demo;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.scene.paint.Color;
 
 public class PresentationModel {
-    private final IntegerProperty age           = new SimpleIntegerProperty(42);
-    private final StringProperty  age_Label     = new SimpleStringProperty("Age");
-    private final BooleanProperty age_readOnly  = new SimpleBooleanProperty(false);
-    private final BooleanProperty age_mandatory = new SimpleBooleanProperty(true);
 
-    public int getAge() {
-        return age.get();
+    private final DoubleProperty pmLatitude = new SimpleDoubleProperty();
+    private final DoubleProperty pmLongitude = new SimpleDoubleProperty();
+    private final StringProperty pmCity = new SimpleStringProperty();
+    private final StringProperty pmCanton = new SimpleStringProperty();
+
+    private final ObjectProperty<Color> baseColor = new SimpleObjectProperty<>();
+
+
+    // Getters and Setters:
+
+    public double getPmLatitude() {
+        return pmLatitude.get();
     }
 
-    public IntegerProperty ageProperty() {
-        return age;
+    public DoubleProperty pmLatitudeProperty() {
+        return pmLatitude;
     }
 
-    public void setAge(int age) {
-        this.age.set(age);
+    public void setPmLatitude(double pmLatitude) {
+        this.pmLatitude.set(pmLatitude);
     }
 
-    public String getAge_Label() {
-        return age_Label.get();
+    public double getPmLongitude() {
+        return pmLongitude.get();
     }
 
-    public StringProperty age_LabelProperty() {
-        return age_Label;
+    public DoubleProperty pmLongitudeProperty() {
+        return pmLongitude;
     }
 
-    public void setAge_Label(String age_Label) {
-        this.age_Label.set(age_Label);
+    public void setPmLongitude(double pmLongitude) {
+        this.pmLongitude.set(pmLongitude);
     }
 
-    public boolean isAge_readOnly() {
-        return age_readOnly.get();
+    public String getPmCity() {
+        return pmCity.get();
     }
 
-    public BooleanProperty age_readOnlyProperty() {
-        return age_readOnly;
+    public StringProperty pmCityProperty() {
+        return pmCity;
     }
 
-    public void setAge_readOnly(boolean age_readOnly) {
-        this.age_readOnly.set(age_readOnly);
+    public void setPmCity(String pmCity) {
+        this.pmCity.set(pmCity);
     }
 
-    public boolean isAge_mandatory() {
-        return age_mandatory.get();
+    public String getPmCanton() {
+        return pmCanton.get();
     }
 
-    public BooleanProperty age_mandatoryProperty() {
-        return age_mandatory;
+    public StringProperty pmCantonProperty() {
+        return pmCanton;
     }
 
-    public void setAge_mandatory(boolean age_mandatory) {
-        this.age_mandatory.set(age_mandatory);
+    public void setPmCanton(String pmCanton) {
+        this.pmCanton.set(pmCanton);
+    }
+
+    public Color getBaseColor() {
+        return baseColor.get();
+    }
+
+    public ObjectProperty<Color> baseColorProperty() {
+        return baseColor;
+    }
+
+    public void setBaseColor(Color baseColor) {
+        this.baseColor.set(baseColor);
     }
 }

@@ -46,17 +46,27 @@ public class BusinessControl extends Control {
 
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
 //    static final String FORMATTED_INTEGER_PATTERN = "%,d";
-    static final String FORMATTED_DOUBLE_PATTERN = "%f";
-
 //    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
-
-    // TODO: check correctness of the following regex:
-    private static final String DOUBLE_REGEX = "[+-]?[\\d]{1,2}[.]?[\\d]{0,8}";
 //    private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
+
+    static final String FORMATTED_DOUBLE_PATTERN = "%f";
+    // The following regex accepts:
+    //   \\s*     -> unlimited spaces in all the places
+    //   (...)    -> groups 1 and 2 for separate extraction for latitude and longitude
+    //   [,]?      -> optional comma, if you provide the longitude as well
+    //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
+    //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 8 digits after the dot
+    private static final String DOUBLE_REGEX = "\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*[,]?\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*";
     private static final Pattern DOUBLE_PATTERN = Pattern.compile(DOUBLE_REGEX);
 
-    //todo: Integer bei Bedarf ersetzen
+    // All properties:
     private final DoubleProperty latitude = new SimpleDoubleProperty();
+
+    // TODO: to be implemented:
+    private final DoubleProperty longitude = new SimpleDoubleProperty();
+    private final StringProperty city = new SimpleStringProperty();
+    private final StringProperty canton = new SimpleStringProperty();
+
     private final StringProperty userFacingText = new SimpleStringProperty();
 
     private final BooleanProperty mandatory = new SimpleBooleanProperty() {
@@ -179,6 +189,42 @@ public class BusinessControl extends Control {
 
     public void setLatitude(double latitude) {
         this.latitude.set(latitude);
+    }
+
+    public double getLongitude() {
+        return longitude.get();
+    }
+
+    public DoubleProperty longitudeProperty() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude.set(longitude);
+    }
+
+    public String getCity() {
+        return city.get();
+    }
+
+    public StringProperty cityProperty() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city.set(city);
+    }
+
+    public String getCanton() {
+        return canton.get();
+    }
+
+    public StringProperty cantonProperty() {
+        return canton;
+    }
+
+    public void setCanton(String canton) {
+        this.canton.set(canton);
     }
 
     public boolean isReadOnly() {
