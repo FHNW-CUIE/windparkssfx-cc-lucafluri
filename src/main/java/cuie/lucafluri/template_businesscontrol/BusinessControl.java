@@ -2,12 +2,7 @@ package cuie.lucafluri.template_businesscontrol;
 
 import java.util.regex.Pattern;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
@@ -30,6 +25,7 @@ public class BusinessControl extends Control {
     //  forgiving format folgende Eingabe verarbeiten:
     //  - möglich: 47°21'59.7"N 8°32'22.9"E
     //  - möglich: 47.366584, 8.539701
+    //  - evtl. (forward geo-coding): Lagerstrasse 4, Zollikon
     //  - Checks ob Breiten-/Längengrade auch in den erlaubten Ranges sind
 
     // TODO 4:
@@ -49,13 +45,18 @@ public class BusinessControl extends Control {
 
 
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
-    static final String FORMATTED_INTEGER_PATTERN = "%,d";
+//    static final String FORMATTED_INTEGER_PATTERN = "%,d";
+    static final String FORMATTED_DOUBLE_PATTERN = "%f";
 
-    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
-    private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
+//    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
+
+    // TODO: check correctness of the following regex:
+    private static final String DOUBLE_REGEX = "[+-]?[\\d]{1,2}[.]?[\\d]{0,8}";
+//    private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
+    private static final Pattern DOUBLE_PATTERN = Pattern.compile(DOUBLE_REGEX);
 
     //todo: Integer bei Bedarf ersetzen
-    private final IntegerProperty value = new SimpleIntegerProperty();
+    private final DoubleProperty latitude = new SimpleDoubleProperty();
     private final StringProperty userFacingText = new SimpleStringProperty();
 
     private final BooleanProperty mandatory = new SimpleBooleanProperty() {
@@ -90,21 +91,21 @@ public class BusinessControl extends Control {
     }
 
     public void reset() {
-        setUserFacingText(convertToString(getValue()));
+        setUserFacingText(convertToString(getLatitude()));
     }
 
     public void increase() {
-        setValue(getValue() + 1);
+        setLatitude(getLatitude() + 1);
     }
 
     public void decrease() {
-        setValue(getValue() - 1);
+        setLatitude(getLatitude() - 1);
     }
 
     private void initializeSelf() {
          getStyleClass().add("business-control");
 
-         setUserFacingText(convertToString(getValue()));
+         setUserFacingText(convertToString(getLatitude()));
     }
 
     //todo: durch geeignete Konvertierungslogik ersetzen
@@ -116,20 +117,21 @@ public class BusinessControl extends Control {
                 return;
             }
 
-            if (isInteger(userInput)) {
+            // TODO: make smarter checkings here!
+            if (isDouble(userInput)) {
                 setInvalid(false);
                 setErrorMessage(null);
-                setValue(convertToInt(userInput));
+                setLatitude(convertToDouble(userInput));
             } else {
                 setInvalid(true);
-                setErrorMessage("Not an Integer");
+                setErrorMessage("Not a Double");
             }
         });
 
-        valueProperty().addListener((observable, oldValue, newValue) -> {
+        latitudeProperty().addListener((observable, oldValue, newValue) -> {
             setInvalid(false);
             setErrorMessage(null);
-            setUserFacingText(convertToString(newValue.intValue()));
+            setUserFacingText(convertToString(newValue.doubleValue()));
         });
     }
 
@@ -148,30 +150,35 @@ public class BusinessControl extends Control {
         }
     }
 
-    private boolean isInteger(String userInput) {
-        return INTEGER_PATTERN.matcher(userInput).matches();
+//    private boolean isInteger(String userInput) {
+//        return INTEGER_PATTERN.matcher(userInput).matches();
+//    }
+
+    private boolean isDouble(String userInput) {
+        return DOUBLE_PATTERN.matcher(userInput).matches();
     }
 
-    private int convertToInt(String userInput) {
-        return Integer.parseInt(userInput);
+    private double convertToDouble(String userInput) {
+        return Double.parseDouble(userInput);
     }
 
-    private String convertToString(int newValue) {
-        return String.format(FORMATTED_INTEGER_PATTERN, newValue);
+    private String convertToString(double newValue) {
+        return String.format(FORMATTED_DOUBLE_PATTERN, newValue);
     }
 
 
     // alle  Getter und Setter
-    public int getValue() {
-        return value.get();
+
+    public double getLatitude() {
+        return latitude.get();
     }
 
-    public IntegerProperty valueProperty() {
-        return value;
+    public DoubleProperty latitudeProperty() {
+        return latitude;
     }
 
-    public void setValue(int value) {
-        this.value.set(value);
+    public void setLatitude(double latitude) {
+        this.latitude.set(latitude);
     }
 
     public boolean isReadOnly() {

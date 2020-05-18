@@ -190,7 +190,9 @@ class BusinessSkin extends SkinBase<BusinessControl> {
     }
 
     private void setupBindings() {
-        readOnlyNode.textProperty().bind(getSkinnable().valueProperty().asString(BusinessControl.FORMATTED_INTEGER_PATTERN));
+        // TODO: ersetzen durch neues latitude / longitude - pattern
+        readOnlyNode.textProperty().bind(getSkinnable().latitudeProperty().asString(BusinessControl.FORMATTED_DOUBLE_PATTERN));
+
         editableNode.textProperty().bindBidirectional(getSkinnable().userFacingTextProperty());
 
         editableNode.promptTextProperty().bind(getSkinnable().labelProperty());

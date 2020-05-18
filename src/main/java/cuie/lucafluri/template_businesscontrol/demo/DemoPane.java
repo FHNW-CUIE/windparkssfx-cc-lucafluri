@@ -70,7 +70,7 @@ class DemoPane extends BorderPane {
 
 
         // TODO: dieses Binding wird dann vom oop2-Student erstellt... Hier nur für unser Testen verwenden
-        businessControl.valueProperty()    .bindBidirectional(model.ageProperty());
+        businessControl.latitudeProperty()    .bindBidirectional(model.ageProperty());
         businessControl.labelProperty()    .bind(model.age_LabelProperty());
         businessControl.readOnlyProperty() .bind(model.age_readOnlyProperty());
         businessControl.mandatoryProperty().bind(model.age_mandatoryProperty());
