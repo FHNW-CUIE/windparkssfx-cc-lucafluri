@@ -1,4 +1,4 @@
-package cuie.project.template_simplecontrol.demo;
+package cuie.lucafluri.template_simplecontrol.demo;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.ColorPicker;
@@ -7,7 +7,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import cuie.project.template_simplecontrol.SimpleControl;
+import cuie.lucafluri.template_simplecontrol.SimpleControl;
 
 public class DemoPane extends BorderPane {
 

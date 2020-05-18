@@ -1,4 +1,4 @@
-package cuie.project.template_businesscontrol.demo;
+package cuie.lucafluri.template_businesscontrol.demo;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
@@ -8,7 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import cuie.project.template_businesscontrol.BusinessControl;
+import cuie.lucafluri.template_businesscontrol.BusinessControl;
 
 class DemoPane extends BorderPane {
     private BusinessControl businessControl;

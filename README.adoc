@@ -2,7 +2,8 @@
 
 === Bearbeitet von
 
-* _Vorname Nachname_
+* Luca Fluri
+* Andreas Ambühl
 
 === Integriert in die OOP2-Projekte von
 

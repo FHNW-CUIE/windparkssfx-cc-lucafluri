@@ -1,4 +1,4 @@
-package cuie.project.template_simplecontrol.demo;
+package cuie.lucafluri.template_simplecontrol.demo;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;

@@ -1,4 +1,4 @@
-package cuie.project.template_simplecontrol;
+package cuie.lucafluri.template_simplecontrol;
 
 import java.util.List;
 import java.util.Locale;
