@@ -1,5 +1,9 @@
 package cuie.lucafluri.template_businesscontrol;
 
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Control;
@@ -13,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.regex.Pattern;
 
 //todo: umbenennen
 public class BusinessControl extends Control {
@@ -34,6 +37,7 @@ public class BusinessControl extends Control {
     //  forgiving format folgende Eingabe verarbeiten:
     //  - möglich: 47°21'59.7"N 8°32'22.9"E
     //  - möglich: 47.366584, 8.539701
+    //  - evtl. (forward geo-coding): Lagerstrasse 4, Zollikon
     //  - Checks ob Breiten-/Längengrade auch in den erlaubten Ranges sind
 
     // TODO 4:
@@ -52,46 +56,30 @@ public class BusinessControl extends Control {
     //
 
 
-    // Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
-    //    USAGE:
-    //      System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
-    //      System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
-
-    public static JSONObject getGeocodingJSON(String query, Boolean reverse) throws IOException {
-        URL urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
-        String readLine = null;
-        HttpURLConnection connection = (HttpURLConnection) urlForGetRequest.openConnection();
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            while ((readLine = in .readLine()) != null) {
-                response.append(readLine);
-            } in .close();
-            //JSON OBJECT
-            JSONObject json  = new JSONObject(response.toString());
-            JSONArray data = (JSONArray) json.get("data");
-            JSONObject first = (JSONObject) data.get(0);
-//            System.out.println("JSON String Result " + first.get("country"));
-            return json;
-        } else {
-            System.out.println("GET NOT WORKED");
-            return null;
-        }
-    }
-
-
 
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
-    static final String FORMATTED_INTEGER_PATTERN = "%,d";
+//    static final String FORMATTED_INTEGER_PATTERN = "%,d";
+//    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
+//    private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
 
-    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
-    private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
+    static final String FORMATTED_DOUBLE_PATTERN = "%f";
+    // The following regex accepts:
+    //   \\s*     -> unlimited spaces in all the places
+    //   (...)    -> groups 1 and 2 for separate extraction for latitude and longitude
+    //   [,]?      -> optional comma, if you provide the longitude as well
+    //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
+    //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 8 digits after the dot
+    private static final String DOUBLE_REGEX = "\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*[,]?\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*";
+    private static final Pattern DOUBLE_PATTERN = Pattern.compile(DOUBLE_REGEX);
 
-    //todo: Integer bei Bedarf ersetzen
-    private final IntegerProperty value = new SimpleIntegerProperty();
+    // All properties:
+    private final DoubleProperty latitude = new SimpleDoubleProperty();
+
+    // TODO: to be implemented:
+    private final DoubleProperty longitude = new SimpleDoubleProperty();
+    private final StringProperty city = new SimpleStringProperty();
+    private final StringProperty canton = new SimpleStringProperty();
+
     private final StringProperty userFacingText = new SimpleStringProperty();
 
     private final BooleanProperty mandatory = new SimpleBooleanProperty() {
@@ -126,21 +114,21 @@ public class BusinessControl extends Control {
     }
 
     public void reset() {
-        setUserFacingText(convertToString(getValue()));
+        setUserFacingText(convertToString(getLatitude()));
     }
 
     public void increase() {
-        setValue(getValue() + 1);
+        setLatitude(getLatitude() + 1);
     }
 
     public void decrease() {
-        setValue(getValue() - 1);
+        setLatitude(getLatitude() - 1);
     }
 
     private void initializeSelf() {
          getStyleClass().add("business-control");
 
-         setUserFacingText(convertToString(getValue()));
+         setUserFacingText(convertToString(getLatitude()));
     }
 
     //todo: durch geeignete Konvertierungslogik ersetzen
@@ -152,24 +140,70 @@ public class BusinessControl extends Control {
                 return;
             }
 
-            if (isInteger(userInput)) {
+            // TODO: make smarter checkings here!
+            if (isDouble(userInput)) {
                 setInvalid(false);
                 setErrorMessage(null);
-                setValue(convertToInt(userInput));
+
+                Matcher matcher = DOUBLE_PATTERN.matcher(userInput);
+                if (matcher.matches()) {
+                    MatchResult matchResult = matcher.toMatchResult();
+                    setLatitude(convertToDouble(matchResult.group(1)));
+                    setLongitude(convertToDouble(matchResult.group(2)));
+                }
             } else {
                 setInvalid(true);
-                setErrorMessage("Not an Integer");
+                setErrorMessage("Not a Double");
             }
         });
 
-        valueProperty().addListener((observable, oldValue, newValue) -> {
+        latitudeProperty().addListener((observable, oldValue, newValue) -> {
             setInvalid(false);
             setErrorMessage(null);
-            setUserFacingText(convertToString(newValue.intValue()));
+            setUserFacingText(convertToString(newValue.doubleValue()));
         });
     }
 
     //todo: Forgiving Format implementieren
+
+
+    /**
+     * Geocoding conversion.
+     *
+     * Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
+     *     USAGE:
+     *     System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
+     *     System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
+     * @param query     your query
+     * @param reverse   boolean whether you want to use reverse or forward conversion
+     * @return          JSONObject for further processing
+     * @throws IOException Exception if error should happen
+     */
+    public static JSONObject getGeocodingJSON(String query, Boolean reverse) throws IOException {
+        URL urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
+        String readLine = null;
+        HttpURLConnection connection = (HttpURLConnection) urlForGetRequest.openConnection();
+        connection.setRequestMethod("GET");
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            while ((readLine = in .readLine()) != null) {
+                response.append(readLine);
+            } in .close();
+            //JSON OBJECT
+            JSONObject json  = new JSONObject(response.toString());
+            JSONArray data = (JSONArray) json.get("data");
+            JSONObject first = (JSONObject) data.get(0);
+//            System.out.println("JSON String Result " + first.get("country"));
+            return json;
+        } else {
+            System.out.println("GET NOT WORKED");
+            return null;
+        }
+    }
+
 
     public void loadFonts(String... font){
         for(String f : font){
@@ -184,30 +218,71 @@ public class BusinessControl extends Control {
         }
     }
 
-    private boolean isInteger(String userInput) {
-        return INTEGER_PATTERN.matcher(userInput).matches();
+//    private boolean isInteger(String userInput) {
+//        return INTEGER_PATTERN.matcher(userInput).matches();
+//    }
+
+    private boolean isDouble(String userInput) {
+        return DOUBLE_PATTERN.matcher(userInput).matches();
     }
 
-    private int convertToInt(String userInput) {
-        return Integer.parseInt(userInput);
+    private double convertToDouble(String userInput) {
+        return Double.parseDouble(userInput);
     }
 
-    private String convertToString(int newValue) {
-        return String.format(FORMATTED_INTEGER_PATTERN, newValue);
+    private String convertToString(double newValue) {
+        return String.format(FORMATTED_DOUBLE_PATTERN, newValue);
     }
 
 
     // alle  Getter und Setter
-    public int getValue() {
-        return value.get();
+
+    public double getLatitude() {
+        return latitude.get();
     }
 
-    public IntegerProperty valueProperty() {
-        return value;
+    public DoubleProperty latitudeProperty() {
+        return latitude;
     }
 
-    public void setValue(int value) {
-        this.value.set(value);
+    public void setLatitude(double latitude) {
+        this.latitude.set(latitude);
+    }
+
+    public double getLongitude() {
+        return longitude.get();
+    }
+
+    public DoubleProperty longitudeProperty() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude.set(longitude);
+    }
+
+    public String getCity() {
+        return city.get();
+    }
+
+    public StringProperty cityProperty() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city.set(city);
+    }
+
+    public String getCanton() {
+        return canton.get();
+    }
+
+    public StringProperty cantonProperty() {
+        return canton;
+    }
+
+    public void setCanton(String canton) {
+        this.canton.set(canton);
     }
 
     public boolean isReadOnly() {
