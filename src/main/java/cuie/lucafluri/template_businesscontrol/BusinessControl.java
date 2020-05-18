@@ -1,5 +1,7 @@
 package cuie.lucafluri.template_businesscontrol;
 
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.beans.property.*;
@@ -131,7 +133,13 @@ public class BusinessControl extends Control {
             if (isDouble(userInput)) {
                 setInvalid(false);
                 setErrorMessage(null);
-                setLatitude(convertToDouble(userInput));
+
+                Matcher matcher = DOUBLE_PATTERN.matcher(userInput);
+                if (matcher.matches()) {
+                    MatchResult matchResult = matcher.toMatchResult();
+                    setLatitude(convertToDouble(matchResult.group(1)));
+                    setLongitude(convertToDouble(matchResult.group(2)));
+                }
             } else {
                 setInvalid(true);
                 setErrorMessage("Not a Double");
