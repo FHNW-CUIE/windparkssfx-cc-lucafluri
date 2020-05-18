@@ -1,22 +1,26 @@
 package cuie.lucafluri.template_businesscontrol;
 
-import java.util.regex.Pattern;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.text.Font;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.regex.Pattern;
 
 //todo: umbenennen
 public class BusinessControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass INVALID_CLASS   = PseudoClass.getPseudoClass("invalid");
+
+    static final String api_key = "1d044ccae845d20494b945d0ff37bedc";
 
 
     // TODO 1:
@@ -46,6 +50,38 @@ public class BusinessControl extends Control {
     //   -> schon mal Längen-/Breitengrad eingeben
     //
     //
+
+
+    // Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
+    //    USAGE:
+    //      System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
+    //      System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
+
+    public static JSONObject getGeocodingJSON(String query, Boolean reverse) throws IOException {
+        URL urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
+        String readLine = null;
+        HttpURLConnection connection = (HttpURLConnection) urlForGetRequest.openConnection();
+        connection.setRequestMethod("GET");
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            while ((readLine = in .readLine()) != null) {
+                response.append(readLine);
+            } in .close();
+            //JSON OBJECT
+            JSONObject json  = new JSONObject(response.toString());
+            JSONArray data = (JSONArray) json.get("data");
+            JSONObject first = (JSONObject) data.get(0);
+//            System.out.println("JSON String Result " + first.get("country"));
+            return json;
+        } else {
+            System.out.println("GET NOT WORKED");
+            return null;
+        }
+    }
+
 
 
     //todo: durch die eigenen regulaeren Ausdruecke ersetzen
@@ -79,7 +115,7 @@ public class BusinessControl extends Control {
     private final StringProperty  errorMessage = new SimpleStringProperty();
 
 
-    public BusinessControl() {
+    public BusinessControl() throws IOException {
         initializeSelf();
         addValueChangeListener();
     }
