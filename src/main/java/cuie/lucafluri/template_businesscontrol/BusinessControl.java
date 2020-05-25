@@ -1,10 +1,13 @@
 package cuie.lucafluri.template_businesscontrol;
 
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sothawo.mapjfx.Coordinate;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Control;
@@ -29,7 +32,8 @@ public class BusinessControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
 
-    private static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
+    static final String api_key = "1d044ccae845d20494b945d0ff37bedc";
+
 
     // DONE: _TODO 1:
     //  alle Properties auflisten, die man verarbeiten will -> mit den getter/setters
@@ -94,6 +98,7 @@ public class BusinessControl extends Control {
     // TODO: to be implemented:
     private final DoubleProperty longitude = new SimpleDoubleProperty();
     private final StringProperty city = new SimpleStringProperty();
+    private final StringProperty region = new SimpleStringProperty();
     private final StringProperty canton = new SimpleStringProperty();
 
     private final StringProperty userFacingText = new SimpleStringProperty();
@@ -224,45 +229,95 @@ public class BusinessControl extends Control {
             setInvalid(false);
             setErrorMessage(null);
             setUserFacingText(convertToString(newValue.doubleValue()));
+
         });
+
+        longitudeProperty().addListener((observable, oldValue, newValue) -> {
+
+
+        });
+    }
+
+    //todo: Forgiving Format implementieren
+
+
+    public void setGeocodedValues(){
+            JSONObject data = getGeocodingJSON(getLatitude() + "," + getLongitude(), true);
+            if(data != null){
+                setCity(data.get("locality").equals(null) ? "" : (String) data.get("locality")); //Standort
+                setRegion(data.get("administrative_area").equals(null) ? "" : (String) data.get("administrative_area")); //Gemeinde
+                setCanton(data.get("region_code").equals(null) ? "" : (String) data.get("region_code")); //Kanton Kürzel
+            }
+
     }
 
     /**
      * Geocoding conversion.
-     * <p>
-     * Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
-     * USAGE:
-     * System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
-     * System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
      *
-     * @param query   your query
-     * @param reverse boolean whether you want to use reverse or forward conversion
-     * @return JSONObject for further processing
-     * @throws IOException Exception if error should happen
+     * Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
+     *     USAGE:
+     *     System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
+     *     System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
+     * @param query     your query
+     * @param reverse   boolean whether you want to use reverse or forward conversion
+     * @return          JSONObject for further processing
      */
-    public static JSONObject getGeocodingJSON(String query, Boolean reverse) throws IOException {
-        URL urlForGetRequest = new URL(
-                "http://api.positionstack.com/v1/" + (reverse ? "reverse" : "forward") + "?access_key=" + API_KEY
-                        + "&query=" + query);
+    public static JSONObject getGeocodingJSON(String query, Boolean reverse)  {
+        URL urlForGetRequest = null;
+        try {
+            urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         String readLine = null;
-        HttpURLConnection connection = (HttpURLConnection) urlForGetRequest.openConnection();
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) urlForGetRequest.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            connection.setRequestMethod("GET");
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+        int responseCode = 0;
+        try {
+            responseCode = connection.getResponseCode();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             StringBuilder response = new StringBuilder();
-            while ((readLine = in.readLine()) != null) {
+            while (true) {
+                try {
+                    if (!((readLine = in .readLine()) != null)) break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 response.append(readLine);
             }
-            in.close();
+            try {
+                in .close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //JSON OBJECT
-            JSONObject json = new JSONObject(response.toString());
+            JSONObject json  = new JSONObject(response.toString());
             JSONArray data = (JSONArray) json.get("data");
             JSONObject first = (JSONObject) data.get(0);
 //            System.out.println("JSON String Result " + first.get("country"));
-            return json;
+            System.out.println(first);
+            return first;
         } else {
-            System.out.println("GET NOT WORKED");
+            System.out.println("API CALL ERROR");
             return null;
         }
     }
@@ -426,4 +481,16 @@ public class BusinessControl extends Control {
         return invalid.get();
     }
 
+
+    public String getRegion() {
+        return region.get();
+    }
+
+    public void setRegion(String region) {
+        this.region.set(region);
+    }
+
+    public StringProperty regionProperty() {
+        return region;
+    }
 }

@@ -10,19 +10,19 @@ import javafx.scene.layout.VBox;
 
 import cuie.lucafluri.template_businesscontrol.BusinessControl;
 
-import java.io.IOException;
 
 class DemoPane extends BorderPane {
     private BusinessControl businessControl;
 
     private TextField latitude;
     private TextField longitude;
-    private TextField city;
+    private TextField standort;
     private TextField canton;
+    private TextField gemeinde;
 
     private PresentationModel model;
 
-    DemoPane(PresentationModel model) throws IOException {
+    DemoPane(PresentationModel model)  {
         this.model = model;
 
         initializeControls();
@@ -31,15 +31,16 @@ class DemoPane extends BorderPane {
         setupBindings();
     }
 
-    private void initializeControls() throws IOException {
+    private void initializeControls() {
         setPadding(new Insets(10));
 
         businessControl = new BusinessControl();
 
         latitude = new TextField();
         longitude = new TextField();
-        city = new TextField();
+        standort = new TextField();
         canton = new TextField();
+        gemeinde = new TextField();
     }
 
     private void layoutControls() {
@@ -48,7 +49,8 @@ class DemoPane extends BorderPane {
                 new Label("Business Control Properties"),
                 new Label("Latitude"), latitude,
                 new Label("Longitude"), longitude,
-                new Label("City"), city,
+                new Label("Standort"), standort,
+                new Label("Gemeinde"), gemeinde,
                 new Label("Canton"), canton);
         box.setPadding(new Insets(10));
         box.setSpacing(10);
@@ -63,13 +65,15 @@ class DemoPane extends BorderPane {
         latitude.textProperty().bind(model.pmLatitudeProperty().asString());
         longitude.textProperty().bind(model.pmLongitudeProperty().asString());
 
-        city.textProperty().bindBidirectional(model.pmCityProperty());
+        standort.textProperty().bindBidirectional(model.pmCityProperty());
+        gemeinde.textProperty().bindBidirectional(model.pmRegionProperty());
         canton.textProperty().bindBidirectional(model.pmCantonProperty());
 
         // TODO: dieses Binding wird dann vom oop2-Student erstellt... Hier nur für unser Testen verwenden
         businessControl.latitudeProperty().bindBidirectional(model.pmLatitudeProperty());
         businessControl.longitudeProperty().bindBidirectional(model.pmLongitudeProperty());
         businessControl.cityProperty().bindBidirectional(model.pmCityProperty());
+        businessControl.regionProperty().bindBidirectional(model.pmRegionProperty());
         businessControl.cantonProperty().bindBidirectional(model.pmCantonProperty());
     }
 
