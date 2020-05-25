@@ -4,6 +4,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sothawo.mapjfx.Coordinate;
 import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Control;
@@ -259,6 +260,10 @@ public class BusinessControl extends Control {
 
     public void setLongitude(double longitude) {
         this.longitude.set(longitude);
+    }
+
+    public Coordinate getCoordinates(){
+        return new Coordinate(getLatitude(), getLongitude());
     }
 
     public String getCity() {
