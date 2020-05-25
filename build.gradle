@@ -27,6 +27,7 @@ dependencies {
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	implementation "org.fxmisc.cssfx:cssfx:11.2.1"
     compile 'org.json:json:20171018'
+    compile 'com.sothawo:mapjfx:1.27.1'
 
 	testImplementation('org.junit.jupiter:junit-jupiter:5.6.2')
 }
