@@ -2,6 +2,7 @@ package cuie.lucafluri.template_businesscontrol;
 
 import java.util.Arrays;
 
+import com.sothawo.mapjfx.*;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -25,6 +26,7 @@ import javafx.util.Duration;
 class BusinessSkin extends SkinBase<BusinessControl> {
     private static final int IMG_SIZE   = 12;
     private static final int IMG_OFFSET = 4;
+
 
     private static final String ANGLE_DOWN = "\uf107";
     private static final String ANGLE_UP   = "\uf106";
@@ -58,6 +60,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
     private Animation      invalidInputAnimation;
     private FadeTransition fadeOutValidIconAnimation;
+
 
     BusinessSkin(BusinessControl control) {
         super(control);
@@ -94,6 +97,8 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
         drawingPane = new StackPane();
         drawingPane.getStyleClass().add("drawing-pane");
+
+
     }
 
     private void layoutParts() {
@@ -107,8 +112,8 @@ class BusinessSkin extends SkinBase<BusinessControl> {
                   drawingPane.getChildren().add(imageView);
               });
 
-        StackPane.setAlignment(editableNode, Pos.CENTER_LEFT);
-        StackPane.setAlignment(readOnlyNode, Pos.CENTER_LEFT);
+        StackPane.setAlignment(editableNode, Pos.CENTER);
+        StackPane.setAlignment(readOnlyNode, Pos.CENTER);
 
         getChildren().add(drawingPane);
     }
