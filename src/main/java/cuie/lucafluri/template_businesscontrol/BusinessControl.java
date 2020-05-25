@@ -38,7 +38,7 @@ public class BusinessControl extends Control {
     //  alle Properties auflisten, die man verarbeiten will -> mit den getter/setters
     //  -> Gemeinde, Kanton, Breite und Längengrade
 
-    // TODO 2:
+    // DONE: _TODO 2:
     //  Alles in einem BusinessControl, z.B. Breitengrad-Feld
 
     // DONE: _TODO 3a:
@@ -47,29 +47,30 @@ public class BusinessControl extends Control {
     //  - möglich: 47.366584, 8.539701
     //  - Checks ob Breiten-/Längengrade auch in den erlaubten Ranges sind
 
-    // TODO 3b:
-    //  - evtl. (forward geo-coding): Lagerstrasse 4, Zollikon
-
-    // TODO 4:
+    // DONE: _TODO 4:
     //  Idee: DropDown öffnet Karte, wo man die Position noch fein justieren kann
     //  Nicht GoogleMaps, sondern OpenStreetMap
 
-    // TODO 5:
+    // DONE: _TODO 5:
     //  Mit API aus Längen-/Breitengrade Gemeinde und Kanton ermitteln:
     //  https://positionstack.com/
     //  https://nominatim.org/
     //  https://osmnames.org/
     //  und die Response korrekt filtern, damit die 4 Properties korrekt gesetzt werden.
 
-    //  Weitere Idee: z.B. wenn Benutzer einfach mal die Gemeinde eingibt
-    //   -> schon mal Längen-/Breitengrad eingeben
-    //
-    //
+    // TODO 6:
+    //  Styling
 
-    //todo: durch die eigenen regulaeren Ausdruecke ersetzen
-//    static final String FORMATTED_INTEGER_PATTERN = "%,d";
-//    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
-//    private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
+    // TODO 7:
+    //  make latitude and longitude also writeable (in the right side of the UI)
+
+    // TODO 8:
+    //  general code cleanup
+
+    // TODO 9:
+    //  README and documentation for implementation
+
+
 
     static final String FORMATTED_DOUBLE_PATTERN = "%f";
     // The following regex accepts:
@@ -189,7 +190,7 @@ public class BusinessControl extends Control {
                             final int longDeg = Integer.parseInt(matchResult.group(11));
                             final int longMin = Integer.parseInt(matchResult.group(12));
                             final double longSec = Double.parseDouble(matchResult.group(13));
-                            final boolean isEast = matchResult.group(16).equals("W");
+                            final boolean isEast = matchResult.group(16).equals("E");
 
                             valid = valid && latSec < 60.0 && longMin < 60.0 && longSec < 60.0;
                             longitude = (longDeg + longMin / 60.0 + longSec / 3600.0) * (isEast ? 1 : -1);
