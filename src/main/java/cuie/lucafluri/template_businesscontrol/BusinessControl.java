@@ -34,12 +34,15 @@ public class BusinessControl extends Control {
     // TODO 2:
     //  Alles in einem BusinessControl, z.B. Breitengrad-Feld
 
-    // TODO 3:
+    // DONE: _TODO 3a:
     //  forgiving format folgende Eingabe verarbeiten:
     //  - möglich: 47°21'59.7"N 8°32'22.9"E
     //  - möglich: 47.366584, 8.539701
-    //  - evtl. (forward geo-coding): Lagerstrasse 4, Zollikon
     //  - Checks ob Breiten-/Längengrade auch in den erlaubten Ranges sind
+
+    // TODO 3b:
+    //  - evtl. (forward geo-coding): Lagerstrasse 4, Zollikon
+
 
     // TODO 4:
     //  Idee: DropDown öffnet Karte, wo man die Position noch fein justieren kann
@@ -71,10 +74,10 @@ public class BusinessControl extends Control {
     //   [,]?      -> optional comma, if you provide the longitude as well
     //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
     //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 8 digits after the dot
-    private static final String D_REG = "([+-]?[\\d]{1,2}[.]?[\\d]{0,8})";
+    private static final String D_REG = "([+-]?[\\d]{1,3}[.]?[\\d]{0,5})";
     private static final String LAT_LONG_REG = "\\s*" + D_REG + "\\s*[,\\s]?\\s*" + D_REG + "\\s*";
     // DMS (degree, minutes, seconds) - format. See also https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees
-    private static final String DMS_REG = "([\\d]{1,3})°([\\d]{1,2})'([\\d]{1,2}([.][\\d]{1,8})?)\"";
+    private static final String DMS_REG = "([\\d]{1,3})°([\\d]{1,2})'([\\d]{1,2}([.][\\d]{1,5})?)\"";
     private static final String DMS_FULL_REG = "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG + "([EW]))";  // a possible input would be:  70°0'25.956"N, 80°27'4.1904"W
     private static final String COORDINATE_REGEX =  LAT_LONG_REG + "|" + DMS_FULL_REG;
 
@@ -156,7 +159,10 @@ public class BusinessControl extends Control {
 
                     // See whether the user tried to enter the DMS-Format (degree-minutes-seconds) used in GPS
                     boolean isGPS = matchResult.group(3) != null;
-//
+
+                    double latitude, longitude;
+                    boolean valid;
+
                     if (isGPS) {
                         // Convert:
                         // See also https://www.latlong.net/lat-long-dms.html
@@ -164,9 +170,9 @@ public class BusinessControl extends Control {
                         // A possible input would be:  70°0'25.956"N, 80°27'4.1904"W
 
                         // Nice for seeing the individual groups:
-                        for (int i = 0; i <= matchResult.groupCount(); i++) {
-                            System.out.printf(" - Group %d: %s\n", i, matchResult.group(i));
-                        }
+//                        for (int i = 0; i <= matchResult.groupCount(); i++) {
+//                            System.out.printf(" - Group %d: %s\n", i, matchResult.group(i));
+//                        }
                         final int latDeg = Integer.parseInt(matchResult.group(4));
                         final int latMin = Integer.parseInt(matchResult.group(5));
                         final double latSec = Double.parseDouble(matchResult.group(6));
@@ -176,17 +182,34 @@ public class BusinessControl extends Control {
                         final double longSec = Double.parseDouble(matchResult.group(12));
                         final boolean isEast = matchResult.group(14).equals("E");
 
-                        setLatitude((latDeg + latMin / 60.0 + latSec / 3600.0) * (isNorth ? 1 : -1));
-                        setLongitude((longDeg + longMin / 60.0 + longSec / 3600.0) * (isEast ? 1 : -1));
+                        // Check range of min and sec (degree is checked later on (is the same for both variants)
+                        valid = latMin < 60.0 && latSec < 60.0 && longMin < 60.0 && longSec < 60.0;
+
+                        latitude = (latDeg + latMin / 60.0 + latSec / 3600.0) * (isNorth ? 1 : -1);
+                        longitude = (longDeg + longMin / 60.0 + longSec / 3600.0) * (isEast ? 1 : -1);
                     } else {
-                        setLatitude(convertToDouble(matchResult.group(1)));
-                        setLongitude(convertToDouble(matchResult.group(2)));
+                        valid = true;
+                        latitude = convertToDouble(matchResult.group(1));
+                        longitude = convertToDouble(matchResult.group(2));
                     }
+
+                    // Check the range of degree:
+                    valid = valid && Math.abs(latitude) <= 90.0 && Math.abs(longitude) <= 180.0;
+                    // Set lat/long:
+                    if (valid) {
+                        setLatitude(latitude);
+                        setLongitude(longitude);
+                        setInvalid(false);
+                        setErrorMessage(null);
+                    } else {
+                        setInvalid(true);
+                        setErrorMessage("invalid latitude / longitude ranges");
+                    }
+
                 }
                 // NOTE: The setInvalid(false) has to be AFTER the above if (matcher.matches()) - statement. Otherwise,
                 // in some cases, the invalid-state is not properly updated (?!?)
-                setInvalid(false);
-                setErrorMessage(null);
+
             } else {
                 setInvalid(true);
                 setErrorMessage("Not a Double");
