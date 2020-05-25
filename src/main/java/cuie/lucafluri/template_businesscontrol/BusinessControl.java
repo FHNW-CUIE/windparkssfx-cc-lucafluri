@@ -49,6 +49,7 @@ public class BusinessControl extends Control {
     //  https://positionstack.com/
     //  https://nominatim.org/
     //  https://osmnames.org/
+    //  und die Response korrekt filtern, damit die 4 Properties korrekt gesetzt werden.
 
     //  Weitere Idee: z.B. wenn Benutzer einfach mal die Gemeinde eingibt
     //   -> schon mal Längen-/Breitengrad eingeben
@@ -69,7 +70,8 @@ public class BusinessControl extends Control {
     //   [,]?      -> optional comma, if you provide the longitude as well
     //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
     //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 8 digits after the dot
-    private static final String DOUBLE_REGEX = "\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*[,]?\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*";
+    private static final String DOUBLE_REGEX = "\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*[,]?\\s+([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*";
+
     private static final Pattern DOUBLE_PATTERN = Pattern.compile(DOUBLE_REGEX);
 
     // All properties:
@@ -131,7 +133,6 @@ public class BusinessControl extends Control {
          setUserFacingText(convertToString(getLatitude()));
     }
 
-    //todo: durch geeignete Konvertierungslogik ersetzen
     private void addValueChangeListener() {
         userFacingText.addListener((observable, oldValue, userInput) -> {
             if (isMandatory() && (userInput == null || userInput.isEmpty())) {
@@ -140,17 +141,17 @@ public class BusinessControl extends Control {
                 return;
             }
 
-            // TODO: make smarter checkings here!
             if (isDouble(userInput)) {
-                setInvalid(false);
-                setErrorMessage(null);
-
                 Matcher matcher = DOUBLE_PATTERN.matcher(userInput);
                 if (matcher.matches()) {
                     MatchResult matchResult = matcher.toMatchResult();
                     setLatitude(convertToDouble(matchResult.group(1)));
                     setLongitude(convertToDouble(matchResult.group(2)));
                 }
+                // NOTE: The setInvalid(false) has to be AFTER the above if (matcher.matches()) - statement. Otherwise,
+                // in some cases, the invalid-state is not properly updated (?!?)
+                setInvalid(false);
+                setErrorMessage(null);
             } else {
                 setInvalid(true);
                 setErrorMessage("Not a Double");
