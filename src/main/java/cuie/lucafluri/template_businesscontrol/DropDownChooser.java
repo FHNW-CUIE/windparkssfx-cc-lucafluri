@@ -3,9 +3,13 @@ package cuie.lucafluri.template_businesscontrol;
 import com.sothawo.mapjfx.*;
 import com.sothawo.mapjfx.event.MapViewEvent;
 import com.sothawo.mapjfx.event.MarkerEvent;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 
 class DropDownChooser extends VBox {
@@ -18,6 +22,8 @@ class DropDownChooser extends VBox {
 
     private MapView mapView;
     private Marker posMarker;
+
+    private Button button;
 
 
     DropDownChooser(BusinessControl businessControl) {
@@ -41,7 +47,7 @@ class DropDownChooser extends VBox {
 
         mapView = new MapView();
         mapView.setMapType(MapType.OSM);
-        mapView.setZoom(12);
+        mapView.setZoom(10);
         mapView.setCenter(businessControl.getCoordinates());
         mapView.setMaxSize(MAP_WIDTH, MAP_HEIGHT);
         mapView.setMinSize(MAP_WIDTH, MAP_HEIGHT);
@@ -55,36 +61,44 @@ class DropDownChooser extends VBox {
         posMarker = new Marker(
                 getClass().getResource("/windrad.png"),-25,-50)
                 .setVisible(true);
+
+        button = new Button("Autofill");
     }
 
     private void layoutParts() {
-        getChildren().addAll(mapView);
+        getChildren().addAll(mapView, button);
     }
 
     private void setupEventHandlers() {
         // After map is initialized
-        mapView.initializedProperty().addListener((observableValue, oldValue, newValue) -> {
-            mapView.addMarker(posMarker);
-        });
+        mapView.initializedProperty().addListener((observableValue, oldValue, newValue) -> mapView.addMarker(posMarker));
         posMarker.setPosition(mapView.getCenter());
         posMarker.setVisible(true);
+
+        button.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
+            businessControl.setGeocodedValues();
+            button.setDisable(true);
+        });
     }
 
     private void setupChangeListeners(){
         mapView.addEventHandler(MapViewEvent.MAP_CLICKED,ev -> {
-            posMarker.setPosition(ev.getCoordinate());
             businessControl.setLatitude(ev.getCoordinate().getLatitude());
             businessControl.setLongitude(ev.getCoordinate().getLongitude());
         });
 
         businessControl.latitudeProperty().addListener(((observable, oldValue, newValue) -> {
-            posMarker.setPosition(businessControl.getCoordinates());
+            posMarker.setPosition(new Coordinate((Double) newValue, businessControl.getLongitude()));
             mapView.setCenter(businessControl.getCoordinates());
+            button.setDisable(false);
+
         }));
 
         businessControl.longitudeProperty().addListener(((observable, oldValue, newValue) -> {
-            posMarker.setPosition(businessControl.getCoordinates());
+            posMarker.setPosition(new Coordinate(businessControl.getLatitude(), (Double) newValue));
             mapView.setCenter(businessControl.getCoordinates());
+            button.setDisable(false);
+
         }));
 
 
