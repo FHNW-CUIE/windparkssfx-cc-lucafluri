@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sothawo.mapjfx.Coordinate;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Control;
@@ -24,48 +23,54 @@ import java.net.URL;
 
 //todo: umbenennen
 public class BusinessControl extends Control {
+    /**
+     * The user can set here, whether the input field contains only the one value (e.g. the latitude),
+     * or both the latitude and longitude (in this case, set to true)
+     */
+    private static final boolean COMPLEX_FIELD = true;
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
-    private static final PseudoClass INVALID_CLASS   = PseudoClass.getPseudoClass("invalid");
+    private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
 
-    static final String api_key = "1d044ccae845d20494b945d0ff37bedc";
+    static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
 
     // DONE: _TODO 1:
     //  alle Properties auflisten, die man verarbeiten will -> mit den getter/setters
     //  -> Gemeinde, Kanton, Breite und Längengrade
 
-    // TODO 2:
+    // DONE: _TODO 2:
     //  Alles in einem BusinessControl, z.B. Breitengrad-Feld
 
-    // TODO 3:
+    // DONE: _TODO 3a:
     //  forgiving format folgende Eingabe verarbeiten:
     //  - möglich: 47°21'59.7"N 8°32'22.9"E
     //  - möglich: 47.366584, 8.539701
-    //  - evtl. (forward geo-coding): Lagerstrasse 4, Zollikon
     //  - Checks ob Breiten-/Längengrade auch in den erlaubten Ranges sind
 
-    // TODO 4:
+    // DONE: _TODO 4:
     //  Idee: DropDown öffnet Karte, wo man die Position noch fein justieren kann
     //  Nicht GoogleMaps, sondern OpenStreetMap
 
-    // TODO 5:
+    // DONE: _TODO 5:
     //  Mit API aus Längen-/Breitengrade Gemeinde und Kanton ermitteln:
     //  https://positionstack.com/
     //  https://nominatim.org/
     //  https://osmnames.org/
     //  und die Response korrekt filtern, damit die 4 Properties korrekt gesetzt werden.
 
-    //  Weitere Idee: z.B. wenn Benutzer einfach mal die Gemeinde eingibt
-    //   -> schon mal Längen-/Breitengrad eingeben
-    //
-    //
+    // TODO 6:
+    //  Styling
+
+    // TODO 7:
+    //  make latitude and longitude also writeable (in the right side of the UI)
+
+    // TODO 8:
+    //  general code cleanup
+
+    // TODO 9:
+    //  README and documentation for implementation
 
 
-
-    //todo: durch die eigenen regulaeren Ausdruecke ersetzen
-//    static final String FORMATTED_INTEGER_PATTERN = "%,d";
-//    private static final String INTEGER_REGEX    = "[+-]?[\\d']{1,14}";
-//    private static final Pattern INTEGER_PATTERN = Pattern.compile(INTEGER_REGEX);
 
     static final String FORMATTED_DOUBLE_PATTERN = "%f";
     // The following regex accepts:
@@ -74,12 +79,16 @@ public class BusinessControl extends Control {
     //   [,]?      -> optional comma, if you provide the longitude as well
     //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
     //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 8 digits after the dot
-    private static final String D_REG = "([+-]?[\\d]{1,2}[.]?[\\d]{0,8})";
-    private static final String LAT_LONG_REG = "\\s*" + D_REG + "\\s*[,\\s]?\\s*" + D_REG + "\\s*";
+    private static final String D_REG = "\\s*([+-]?[\\d]{1,3}[.]?[\\d]{0,5})\\s*";
+    private static final String LAT_LONG_REG = COMPLEX_FIELD
+            ? D_REG + "[,\\s]?" + D_REG
+            : D_REG;
     // DMS (degree, minutes, seconds) - format. See also https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees
-    private static final String DMS_REG = "([\\d]{1,3})°([\\d]{1,2})'([\\d]{1,2}([.][\\d]{1,8})?)\"";
-    private static final String DMS_FULL_REG = "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG + "([EW]))";  // a possible input would be:  70°0'25.956"N, 80°27'4.1904"W
-    private static final String COORDINATE_REGEX =  LAT_LONG_REG + "|" + DMS_FULL_REG;
+    private static final String DMS_REG = "\\s*([\\d]{1,3})°\\s*([\\d]{1,2})'\\s*([\\d]{1,2}([.][\\d]{1,5})?)(\"|'')\\s*";
+    private static final String DMS_FULL_REG = COMPLEX_FIELD
+            ? "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG + "([EW]))\\s*"
+            : "(" + DMS_REG + "([NS]))\\s*";
+    private static final String COORDINATE_REGEX = LAT_LONG_REG + "|" + DMS_FULL_REG;
 
     private static final Pattern COORDINATE_PATTERN = Pattern.compile(COORDINATE_REGEX);
 
@@ -95,34 +104,29 @@ public class BusinessControl extends Control {
     private final StringProperty userFacingText = new SimpleStringProperty();
 
     private final BooleanProperty mandatory = new SimpleBooleanProperty() {
-        @Override
-        protected void invalidated() {
+        @Override protected void invalidated() {
             pseudoClassStateChanged(MANDATORY_CLASS, get());
         }
     };
 
     private final BooleanProperty invalid = new SimpleBooleanProperty(false) {
-        @Override
-        protected void invalidated() {
+        @Override protected void invalidated() {
             pseudoClassStateChanged(INVALID_CLASS, get());
         }
     };
 
     //todo: ergaenzen um convertible
 
-    private final BooleanProperty readOnly     = new SimpleBooleanProperty();
-    private final StringProperty  label        = new SimpleStringProperty();
-    private final StringProperty  errorMessage = new SimpleStringProperty();
+    private final BooleanProperty readOnly = new SimpleBooleanProperty();
+    private final StringProperty label = new SimpleStringProperty();
+    private final StringProperty errorMessage = new SimpleStringProperty();
 
-    private Boolean geocoding = false;
-
-    public BusinessControl()  {
+    public BusinessControl() {
         initializeSelf();
         addValueChangeListener();
     }
 
-    @Override
-    protected Skin<?> createDefaultSkin() {
+    @Override protected Skin<?> createDefaultSkin() {
         return new BusinessSkin(this);
     }
 
@@ -139,9 +143,9 @@ public class BusinessControl extends Control {
     }
 
     private void initializeSelf() {
-         getStyleClass().add("business-control");
+        getStyleClass().add("business-control");
 
-         setUserFacingText(convertToString(getLatitude()));
+        setUserFacingText(convertToString(getLatitude()));
     }
 
     private void addValueChangeListener() {
@@ -157,11 +161,12 @@ public class BusinessControl extends Control {
                 if (matcher.matches()) {
                     MatchResult matchResult = matcher.toMatchResult();
 
-
-
                     // See whether the user tried to enter the DMS-Format (degree-minutes-seconds) used in GPS
                     boolean isGPS = matchResult.group(3) != null;
-//
+
+                    double latitude, longitude = 0;
+                    boolean valid;
+
                     if (isGPS) {
                         // Convert:
                         // See also https://www.latlong.net/lat-long-dms.html
@@ -169,29 +174,51 @@ public class BusinessControl extends Control {
                         // A possible input would be:  70°0'25.956"N, 80°27'4.1904"W
 
                         // Nice for seeing the individual groups:
-                        for (int i = 0; i <= matchResult.groupCount(); i++) {
-                            System.out.printf(" - Group %d: %s\n", i, matchResult.group(i));
-                        }
-                        final int latDeg = Integer.parseInt(matchResult.group(4));
-                        final int latMin = Integer.parseInt(matchResult.group(5));
-                        final double latSec = Double.parseDouble(matchResult.group(6));
-                        final boolean isNorth = matchResult.group(8).equals("N");
-                        final int longDeg = Integer.parseInt(matchResult.group(10));
-                        final int longMin = Integer.parseInt(matchResult.group(11));
-                        final double longSec = Double.parseDouble(matchResult.group(12));
-                        final boolean isEast = matchResult.group(14).equals("E");
+//                        for (int i = 0; i <= matchResult.groupCount(); i++) {
+//                            System.out.printf(" - Group %d: %s\n", i, matchResult.group(i));
+//                        }
+                        final int latDeg = Integer.parseInt(matchResult.group(COMPLEX_FIELD ? 4 : 3));
+                        final int latMin = Integer.parseInt(matchResult.group(COMPLEX_FIELD ? 5 : 4));
+                        final double latSec = Double.parseDouble(matchResult.group(COMPLEX_FIELD ? 6 : 5));
+                        final boolean isNorth = matchResult.group(COMPLEX_FIELD ? 9 : 8).equals("N");
 
-                        setLatitude((latDeg + latMin / 60.0 + latSec / 3600.0) * (isNorth ? 1 : -1));
-                        setLongitude((longDeg + longMin / 60.0 + longSec / 3600.0) * (isEast ? 1 : -1));
+                        // Check range of min and sec (degree is checked later on (is the same for both variants)
+                        valid = latMin < 60.0 && latSec < 60.0;
+                        latitude = (latDeg + latMin / 60.0 + latSec / 3600.0) * (isNorth ? 1 : -1);
+
+                        if (COMPLEX_FIELD) {
+                            final int longDeg = Integer.parseInt(matchResult.group(11));
+                            final int longMin = Integer.parseInt(matchResult.group(12));
+                            final double longSec = Double.parseDouble(matchResult.group(13));
+                            final boolean isEast = matchResult.group(16).equals("E");
+
+                            valid = valid && latSec < 60.0 && longMin < 60.0 && longSec < 60.0;
+                            longitude = (longDeg + longMin / 60.0 + longSec / 3600.0) * (isEast ? 1 : -1);
+                        }
                     } else {
-                        setLatitude(convertToDouble(matchResult.group(1)));
-                        setLongitude(convertToDouble(matchResult.group(2)));
+                        valid = true;
+                        latitude = convertToDouble(matchResult.group(1));
+                        if (COMPLEX_FIELD) {
+                            longitude = convertToDouble(matchResult.group(2));
+                        }
                     }
+
+                    // Check the range of degree:
+                    valid = valid && Math.abs(latitude) <= 90.0 && Math.abs(longitude) <= 180.0;
+                    // Set lat/long:
+                    if (valid) {
+                        setLatitude(latitude);
+                        if (COMPLEX_FIELD) {
+                            setLongitude(longitude);
+                        }
+                        setInvalid(false);
+                        setErrorMessage(null);
+                    } else {
+                        setInvalid(true);
+                        setErrorMessage("invalid latitude / longitude ranges");
+                    }
+
                 }
-                // NOTE: The setInvalid(false) has to be AFTER the above if (matcher.matches()) - statement. Otherwise,
-                // in some cases, the invalid-state is not properly updated (?!?)
-                setInvalid(false);
-                setErrorMessage(null);
             } else {
                 setInvalid(true);
                 setErrorMessage("Not a Double");
@@ -238,7 +265,8 @@ public class BusinessControl extends Control {
     public static JSONObject getGeocodingJSON(String query, Boolean reverse)  {
         URL urlForGetRequest = null;
         try {
-            urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
+            urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + API_KEY
+                    +"&query=" + query);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -295,15 +323,14 @@ public class BusinessControl extends Control {
         }
     }
 
-
-    public void loadFonts(String... font){
-        for(String f : font){
+    public void loadFonts(String... font) {
+        for (String f : font) {
             Font.loadFont(getClass().getResourceAsStream(f), 0);
         }
     }
 
-    public void addStylesheetFiles(String... stylesheetFile){
-        for(String file : stylesheetFile){
+    public void addStylesheetFiles(String... stylesheetFile) {
+        for (String file : stylesheetFile) {
             String stylesheet = getClass().getResource(file).toExternalForm();
             getStylesheets().add(stylesheet);
         }
@@ -324,7 +351,6 @@ public class BusinessControl extends Control {
     private String convertToString(double newValue) {
         return String.format(FORMATTED_DOUBLE_PATTERN, newValue);
     }
-
 
     // alle  Getter und Setter
 
@@ -352,7 +378,7 @@ public class BusinessControl extends Control {
         this.longitude.set(longitude);
     }
 
-    public Coordinate getCoordinates(){
+    public Coordinate getCoordinates() {
         return new Coordinate(getLatitude(), getLongitude());
     }
 

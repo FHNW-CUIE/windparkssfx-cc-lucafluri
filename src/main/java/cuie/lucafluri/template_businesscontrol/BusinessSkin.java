@@ -140,7 +140,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
         invalidInputAnimation.setCycleCount(3);
 
         fadeOutValidIconAnimation = new FadeTransition(Duration.millis(500), State.VALID.imageView);
-        fadeOutValidIconAnimation.setDelay(Duration.seconds(1));
+        fadeOutValidIconAnimation.setDelay(Duration.seconds(1.5));
         fadeOutValidIconAnimation.setFromValue(1.0);
         fadeOutValidIconAnimation.setToValue(0.0);
     }
@@ -186,7 +186,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
     private void setupValueChangedListeners() {
         getSkinnable().invalidProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                startInvalidInputAnimation();
+//                startInvalidInputAnimation();
             } else {
                 State.VALID.imageView.setOpacity(1.0);
                 startFadeOutValidIconTransition();
