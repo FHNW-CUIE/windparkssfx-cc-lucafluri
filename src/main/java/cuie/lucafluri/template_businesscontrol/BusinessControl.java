@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sothawo.mapjfx.Coordinate;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Control;
@@ -32,7 +31,7 @@ public class BusinessControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
 
-    static final String api_key = "1d044ccae845d20494b945d0ff37bedc";
+    static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
 
     // DONE: _TODO 1:
@@ -121,7 +120,7 @@ public class BusinessControl extends Control {
     private final StringProperty label = new SimpleStringProperty();
     private final StringProperty errorMessage = new SimpleStringProperty();
 
-    public BusinessControl() throws IOException {
+    public BusinessControl() {
         initializeSelf();
         addValueChangeListener();
     }
@@ -265,7 +264,8 @@ public class BusinessControl extends Control {
     public static JSONObject getGeocodingJSON(String query, Boolean reverse)  {
         URL urlForGetRequest = null;
         try {
-            urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + api_key +"&query=" + query);
+            urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + API_KEY
+                    +"&query=" + query);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
