@@ -26,7 +26,7 @@ public class BusinessControl extends Control {
     static final String api_key = "1d044ccae845d20494b945d0ff37bedc";
 
 
-    // TODO 1:
+    // DONE: _TODO 1:
     //  alle Properties auflisten, die man verarbeiten will -> mit den getter/setters
     //  -> Gemeinde, Kanton, Breite und Längengrade
 
@@ -70,9 +70,14 @@ public class BusinessControl extends Control {
     //   [,]?      -> optional comma, if you provide the longitude as well
     //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
     //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 8 digits after the dot
-    private static final String DOUBLE_REGEX = "\\s*([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*[,]?\\s+([+-]?[\\d]{1,2}[.]?[\\d]{0,8})\\s*";
+    private static final String D_REG = "([+-]?[\\d]{1,2}[.]?[\\d]{0,8})";
+    private static final String LAT_LONG_REG = "\\s*" + D_REG + "\\s*[,\\s]?\\s*" + D_REG + "\\s*";
+    // DMS (degree, minutes, seconds) - format. See also https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees
+    private static final String DMS_REG = "([\\d]{1,3})°([\\d]{1,2})'([\\d]{1,2}([.][\\d]{1,8})?)\"";
+    private static final String DMS_FULL_REG = "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG + "([EW]))";  // a possible input would be:  70°0'25.956"N, 80°27'4.1904"W
+    private static final String COORDINATE_REGEX =  LAT_LONG_REG + "|" + DMS_FULL_REG;
 
-    private static final Pattern DOUBLE_PATTERN = Pattern.compile(DOUBLE_REGEX);
+    private static final Pattern COORDINATE_PATTERN = Pattern.compile(COORDINATE_REGEX);
 
     // All properties:
     private final DoubleProperty latitude = new SimpleDoubleProperty();
@@ -141,12 +146,41 @@ public class BusinessControl extends Control {
                 return;
             }
 
-            if (isDouble(userInput)) {
-                Matcher matcher = DOUBLE_PATTERN.matcher(userInput);
+            if (isCoordinate(userInput)) {
+                Matcher matcher = COORDINATE_PATTERN.matcher(userInput);
                 if (matcher.matches()) {
                     MatchResult matchResult = matcher.toMatchResult();
-                    setLatitude(convertToDouble(matchResult.group(1)));
-                    setLongitude(convertToDouble(matchResult.group(2)));
+
+
+
+                    // See whether the user tried to enter the DMS-Format (degree-minutes-seconds) used in GPS
+                    boolean isGPS = matchResult.group(3) != null;
+//
+                    if (isGPS) {
+                        // Convert:
+                        // See also https://www.latlong.net/lat-long-dms.html
+                        // and https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees
+                        // A possible input would be:  70°0'25.956"N, 80°27'4.1904"W
+
+                        // Nice for seeing the individual groups:
+                        for (int i = 0; i <= matchResult.groupCount(); i++) {
+                            System.out.printf(" - Group %d: %s\n", i, matchResult.group(i));
+                        }
+                        final int latDeg = Integer.parseInt(matchResult.group(4));
+                        final int latMin = Integer.parseInt(matchResult.group(5));
+                        final double latSec = Double.parseDouble(matchResult.group(6));
+                        final boolean isNorth = matchResult.group(8).equals("N");
+                        final int longDeg = Integer.parseInt(matchResult.group(10));
+                        final int longMin = Integer.parseInt(matchResult.group(11));
+                        final double longSec = Double.parseDouble(matchResult.group(12));
+                        final boolean isEast = matchResult.group(14).equals("E");
+
+                        setLatitude((latDeg + latMin / 60.0 + latSec / 3600.0) * (isNorth ? 1 : -1));
+                        setLongitude((longDeg + longMin / 60.0 + longSec / 3600.0) * (isEast ? 1 : -1));
+                    } else {
+                        setLatitude(convertToDouble(matchResult.group(1)));
+                        setLongitude(convertToDouble(matchResult.group(2)));
+                    }
                 }
                 // NOTE: The setInvalid(false) has to be AFTER the above if (matcher.matches()) - statement. Otherwise,
                 // in some cases, the invalid-state is not properly updated (?!?)
@@ -223,8 +257,8 @@ public class BusinessControl extends Control {
 //        return INTEGER_PATTERN.matcher(userInput).matches();
 //    }
 
-    private boolean isDouble(String userInput) {
-        return DOUBLE_PATTERN.matcher(userInput).matches();
+    private boolean isCoordinate(String userInput) {
+        return COORDINATE_PATTERN.matcher(userInput).matches();
     }
 
     private double convertToDouble(String userInput) {
