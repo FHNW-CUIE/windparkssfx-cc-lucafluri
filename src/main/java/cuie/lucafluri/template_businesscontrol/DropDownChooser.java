@@ -79,11 +79,14 @@ class DropDownChooser extends VBox {
 
         businessControl.latitudeProperty().addListener(((observable, oldValue, newValue) -> {
             posMarker.setPosition(businessControl.getCoordinates());
+            mapView.setCenter(businessControl.getCoordinates());
         }));
 
         businessControl.longitudeProperty().addListener(((observable, oldValue, newValue) -> {
             posMarker.setPosition(businessControl.getCoordinates());
+            mapView.setCenter(businessControl.getCoordinates());
         }));
+
 
     }
 
