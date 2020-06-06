@@ -82,10 +82,20 @@ public class BusinessControl extends Control {
     //      - the GPS Coordinates: 38° 53' 51.63'' N 77° 2' 11.508'' W
     //  (you can have spaces in between, for seconds you can enter either '' or ", and much more...)
 
-    // TODO 11:
+    // DISMISSED: _TODO 11:
     //  Inspect IntelliJ's warning about "Condition 'data.get("administrative_area").equals(null)' is always 'false'"
     //  which occurs in the method setGeocodedValues() where equal-comparisons such as
     //  "data.get("locality").equals(null)" happen
+    //  -> I changed the logic as suggested by intelliJ, but then the "autofill"-Button would cause the following errors
+    //  and autofill would not anymore work:
+    //       Exception in thread "JavaFX Application Thread" java.lang.ClassCastException:
+    //       class org.json.JSONObject$Null cannot be cast to class java.lang.String (org.json.JSONObject$Null is
+    //       in unnamed module of loader 'app'; java.lang.String is in module java.base of loader 'bootstrap')
+    //	     at cuie.lucafluri.template_businesscontrol.BusinessControl.setGeocodedValues(BusinessControl.java:279)
+
+    // TODO 12:
+    //  Remove increase/decrease function (and it's corresponding key bindings). Or massively enhance the functionality
+    //  for it to be actually useful
 
     static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
     // The following regex accepts:
@@ -281,41 +291,31 @@ public class BusinessControl extends Control {
 
     /**
      * Geocoding conversion.
-     *
+     * <p>
      * Query must be in Format of 40.7638435,-73.9729691 in Reverse Mode or 1600 Pennsylvania Ave NW, Washington DC in Forward Mode
-     *     USAGE:
-     *     System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
-     *     System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
-     * @param query     your query
-     * @param reverse   boolean whether you want to use reverse or forward conversion
-     * @return          JSONObject for further processing
+     * USAGE:
+     * System.out.println(getGeocodingJSON("Inselstrasse,44,Basel,Basel-Stadt,Switzerland", false)); --> NO SPACES!
+     * System.out.println(getGeocodingJSON("47.2,7.3", true)); --> NO SPACES!
+     *
+     * @param query   your query
+     * @param reverse boolean whether you want to use reverse or forward conversion
+     * @return JSONObject for further processing
      */
-    public static JSONObject getGeocodingJSON(String query, Boolean reverse)  {
-        URL urlForGetRequest = null;
-        try {
-            urlForGetRequest = new URL("http://api.positionstack.com/v1/"+ (reverse ? "reverse" : "forward") + "?access_key=" + API_KEY
-                    +"&query=" + query);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        String readLine = null;
+    public static JSONObject getGeocodingJSON(String query, Boolean reverse) {
         HttpURLConnection connection = null;
-        try {
-            connection = (HttpURLConnection) urlForGetRequest.openConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            connection.setRequestMethod("GET");
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        }
+        String readLine = null;
         int responseCode = 0;
         try {
+            URL urlForGetRequest = new URL(
+                    "http://api.positionstack.com/v1/" + (reverse ? "reverse" : "forward") + "?access_key=" + API_KEY
+                            + "&query=" + query);
+            connection = (HttpURLConnection) urlForGetRequest.openConnection();
+            connection.setRequestMethod("GET");
             responseCode = connection.getResponseCode();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader in = null;
             try {
@@ -327,7 +327,7 @@ public class BusinessControl extends Control {
             StringBuilder response = new StringBuilder();
             while (true) {
                 try {
-                    if (!((readLine = in.readLine()) != null)) break;
+                    if (in != null && (readLine = in.readLine()) == null) break;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
