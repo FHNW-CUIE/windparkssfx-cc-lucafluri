@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
-import java.text.DecimalFormat;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +38,6 @@ public class BusinessControl extends Control {
     // A new personal API-Key can be generated at https://positionstack.com/
     static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
-
     // DONE: _TODO 1:
     //  alle Properties auflisten, die man verarbeiten will -> mit den getter/setters
     //  -> Gemeinde, Kanton, Breite und Längengrade
@@ -70,7 +68,7 @@ public class BusinessControl extends Control {
     // TODO 7:
     //  make latitude and longitude also writeable (in the right side of the UI)
 
-    // TODO 8:
+    // DONE: _TODO 8:
     //  if COMPLEX_FIELD = true;  -> it should also show both values in the field e.g. when selecting a place in the map
 
     // TODO 9:
@@ -78,8 +76,16 @@ public class BusinessControl extends Control {
 
     // TODO 10:
     //  README and documentation for implementation
+    //   e.g. show that you can go to https://www.latlong.net/, enter any address you want (e.g. Whitehouse), and then
+    //   from below the map, just copy/paste one of the following:
+    //      - the Lat Long (without the brackets):  38.897675, -77.036530
+    //      - the GPS Coordinates: 38° 53' 51.63'' N 77° 2' 11.508'' W
+    //  (you can have spaces in between, for seconds you can enter either '' or ", and much more...)
 
-
+    // TODO 11:
+    //  Inspect IntelliJ's warning about "Condition 'data.get("administrative_area").equals(null)' is always 'false'"
+    //  which occurs in the method setGeocodedValues() where equal-comparisons such as
+    //  "data.get("locality").equals(null)" happen
 
     static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
     // The following regex accepts:
@@ -139,7 +145,20 @@ public class BusinessControl extends Control {
     }
 
     public void reset() {
-        setUserFacingText(convertToString(getLatitude()) + ", " + convertToString(getLongitude()));
+        updateUserFacingText();
+    }
+
+    private void initializeSelf() {
+        getStyleClass().add("business-control");
+        updateUserFacingText();
+    }
+
+    private void updateUserFacingText() {
+        if (COMPLEX_FIELD) {
+            setUserFacingText(convertToString(getLatitude()) + ", " + convertToString(getLongitude()));
+        } else {
+            setUserFacingText(convertToString(getLatitude()));
+        }
     }
 
     public void increase() {
@@ -148,12 +167,6 @@ public class BusinessControl extends Control {
 
     public void decrease() {
         setLatitude(getLatitude() - 1);
-    }
-
-    private void initializeSelf() {
-        getStyleClass().add("business-control");
-
-        setUserFacingText(convertToString(getLatitude()) + ", " + convertToString(getLongitude()));
     }
 
     private void addValueChangeListener() {
@@ -236,19 +249,25 @@ public class BusinessControl extends Control {
         latitudeProperty().addListener((observable, oldValue, newValue) -> {
             setInvalid(false);
             setErrorMessage(null);
-            setUserFacingText(convertToString(round(newValue.doubleValue(), 5)) + ", " + convertToString(round(getLongitude(), 5)));
-
+            if (COMPLEX_FIELD) {
+                setUserFacingText(convertToString(round(newValue.doubleValue(), 5)) + ", " + convertToString(
+                        round(getLongitude(), 5)));
+            } else {
+                setUserFacingText(convertToString(round(newValue.doubleValue(), 5)));
+            }
         });
 
         longitudeProperty().addListener((observable, oldValue, newValue) -> {
+            setInvalid(false);
+            setErrorMessage(null);
             System.out.println(convertToString(round(newValue.doubleValue(), 5)));
-            setUserFacingText(convertToString(round(getLatitude(), 5)) + ", " + convertToString(round(newValue.doubleValue(), 5)));
-
-
+            if (COMPLEX_FIELD) {
+                setUserFacingText(convertToString(round(getLatitude(), 5)) + ", " + convertToString(
+                        round(newValue.doubleValue(), 5)));
+            }
+            // else {..}  // do nothing, since the non-COMPLEX_FIELD userFacingText doesn't show the longitude at all.
         });
     }
-
-    //todo: Forgiving Format implementieren
 
 
     public void setGeocodedValues(){
@@ -309,19 +328,19 @@ public class BusinessControl extends Control {
             StringBuilder response = new StringBuilder();
             while (true) {
                 try {
-                    if (!((readLine = in .readLine()) != null)) break;
+                    if (!((readLine = in.readLine()) != null)) break;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 response.append(readLine);
             }
             try {
-                in .close();
+                in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //JSON OBJECT
-            JSONObject json  = new JSONObject(response.toString());
+            JSONObject json = new JSONObject(response.toString());
             JSONArray data = (JSONArray) json.get("data");
             JSONObject first = (JSONObject) data.get(0);
 //            System.out.println("JSON String Result " + first.get("country"));
@@ -499,7 +518,6 @@ public class BusinessControl extends Control {
     public boolean isInvalid() {
         return invalid.get();
     }
-
 
     public String getRegion() {
         return region.get();
