@@ -1,15 +1,13 @@
 package cuie.lucafluri.template_businesscontrol.demo;
 
 import javafx.geometry.Insets;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import cuie.lucafluri.template_businesscontrol.BusinessControl;
-
+import javafx.util.StringConverter;
 
 class DemoPane extends BorderPane {
     private BusinessControl businessControl;
@@ -20,11 +18,10 @@ class DemoPane extends BorderPane {
     private TextField canton;
     private TextField gemeinde;
 
-    private PresentationModel model;
+    final private PresentationModel model;
 
-    DemoPane(PresentationModel model)  {
+    DemoPane(PresentationModel model) {
         this.model = model;
-
         initializeControls();
         layoutControls();
         setupValueChangeListeners();
@@ -33,9 +30,7 @@ class DemoPane extends BorderPane {
 
     private void initializeControls() {
         setPadding(new Insets(10));
-
         businessControl = new BusinessControl();
-
         latitude = new TextField();
         longitude = new TextField();
         standort = new TextField();
@@ -61,20 +56,35 @@ class DemoPane extends BorderPane {
     }
 
     private void setupBindings() {
-        // TODO: introduce bindBidirectional or setup value change listeners accordingly
-        latitude.textProperty().bind(model.pmLatitudeProperty().asString());
-        longitude.textProperty().bind(model.pmLongitudeProperty().asString());
+        // Custom StringConverter for to bidirectional binding of latitude and longitude:
+        StringConverter<Number> stringConverter = new StringConverter<>() {
+            @Override public String toString(Number number) {
+                return String.format("%.5f", number.doubleValue());
+            }
 
+            @Override public Number fromString(String string) {
+                try {
+                    return Double.parseDouble(string);
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+            }
+        };
+
+        // Bidirectional binding with the custom stringConverter:
+        latitude.textProperty().bindBidirectional(model.pmLatitudeProperty(), stringConverter);
+        longitude.textProperty().bindBidirectional(model.pmLongitudeProperty(), stringConverter);
+
+        // Bind the other values:
         standort.textProperty().bindBidirectional(model.pmCityProperty());
         gemeinde.textProperty().bindBidirectional(model.pmRegionProperty());
         canton.textProperty().bindBidirectional(model.pmCantonProperty());
 
-        // TODO: dieses Binding wird dann vom oop2-Student erstellt... Hier nur für unser Testen verwenden
+        // The following bindings will be created by the oop2-student who implements our BusinessControl:
         businessControl.latitudeProperty().bindBidirectional(model.pmLatitudeProperty());
         businessControl.longitudeProperty().bindBidirectional(model.pmLongitudeProperty());
         businessControl.cityProperty().bindBidirectional(model.pmCityProperty());
         businessControl.regionProperty().bindBidirectional(model.pmRegionProperty());
         businessControl.cantonProperty().bindBidirectional(model.pmCantonProperty());
     }
-
 }

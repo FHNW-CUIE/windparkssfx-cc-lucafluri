@@ -65,7 +65,7 @@ public class BusinessControl extends Control {
     // TODO 6:
     //  Styling
 
-    // TODO 7:
+    // DONE: _TODO 7:
     //  make latitude and longitude also writeable (in the right side of the UI)
 
     // DONE: _TODO 8:
@@ -260,7 +260,6 @@ public class BusinessControl extends Control {
         longitudeProperty().addListener((observable, oldValue, newValue) -> {
             setInvalid(false);
             setErrorMessage(null);
-            System.out.println(convertToString(round(newValue.doubleValue(), 5)));
             if (COMPLEX_FIELD) {
                 setUserFacingText(convertToString(round(getLatitude(), 5)) + ", " + convertToString(
                         round(newValue.doubleValue(), 5)));
@@ -347,7 +346,7 @@ public class BusinessControl extends Control {
             System.out.println(first);
             return first;
         } else {
-            System.out.println("API CALL ERROR");
+            System.err.println("API CALL ERROR");
             return null;
         }
     }
