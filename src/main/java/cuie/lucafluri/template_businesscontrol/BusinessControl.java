@@ -1,7 +1,10 @@
 package cuie.lucafluri.template_businesscontrol;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.text.DecimalFormat;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +34,9 @@ public class BusinessControl extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
 
+    // Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this project, that's why I left mine in here.
+    // But normally API-Keys should be kept secret
+    // A new personal API-Key can be generated at https://positionstack.com/
     static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
 
@@ -75,7 +81,7 @@ public class BusinessControl extends Control {
 
 
 
-    static final String FORMATTED_DOUBLE_PATTERN = "%f";
+    static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
     // The following regex accepts:
     //   \\s*     -> unlimited spaces in all the places
     //   (...)    -> groups 1 and 2 for separate extraction for latitude and longitude
@@ -103,7 +109,6 @@ public class BusinessControl extends Control {
     private final StringProperty city = new SimpleStringProperty();
     private final StringProperty region = new SimpleStringProperty();
     private final StringProperty canton = new SimpleStringProperty();
-
     private final StringProperty userFacingText = new SimpleStringProperty();
 
     private final BooleanProperty mandatory = new SimpleBooleanProperty() {
@@ -134,7 +139,7 @@ public class BusinessControl extends Control {
     }
 
     public void reset() {
-        setUserFacingText(convertToString(getLatitude()));
+        setUserFacingText(convertToString(getLatitude()) + ", " + convertToString(getLongitude()));
     }
 
     public void increase() {
@@ -148,7 +153,7 @@ public class BusinessControl extends Control {
     private void initializeSelf() {
         getStyleClass().add("business-control");
 
-        setUserFacingText(convertToString(getLatitude()));
+        setUserFacingText(convertToString(getLatitude()) + ", " + convertToString(getLongitude()));
     }
 
     private void addValueChangeListener() {
@@ -231,11 +236,13 @@ public class BusinessControl extends Control {
         latitudeProperty().addListener((observable, oldValue, newValue) -> {
             setInvalid(false);
             setErrorMessage(null);
-            setUserFacingText(convertToString(newValue.doubleValue()));
+            setUserFacingText(convertToString(round(newValue.doubleValue(), 5)) + ", " + convertToString(round(getLongitude(), 5)));
 
         });
 
         longitudeProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println(convertToString(round(newValue.doubleValue(), 5)));
+            setUserFacingText(convertToString(round(getLatitude(), 5)) + ", " + convertToString(round(newValue.doubleValue(), 5)));
 
 
         });
@@ -347,8 +354,16 @@ public class BusinessControl extends Control {
         return COORDINATE_PATTERN.matcher(userInput).matches();
     }
 
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
     private double convertToDouble(String userInput) {
-        return Double.parseDouble(userInput);
+        return round(Double.parseDouble(userInput), 5);
     }
 
     private String convertToString(double newValue) {
@@ -358,7 +373,7 @@ public class BusinessControl extends Control {
     // alle  Getter und Setter
 
     public double getLatitude() {
-        return latitude.get();
+        return round(latitude.get(), 5);
     }
 
     public DoubleProperty latitudeProperty() {
@@ -370,7 +385,7 @@ public class BusinessControl extends Control {
     }
 
     public double getLongitude() {
-        return longitude.get();
+        return round(longitude.get(), 5);
     }
 
     public DoubleProperty longitudeProperty() {
