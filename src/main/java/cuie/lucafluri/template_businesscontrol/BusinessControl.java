@@ -68,7 +68,7 @@ public class BusinessControl extends Control {
     // TODO 7:
     //  make latitude and longitude also writeable (in the right side of the UI)
 
-    // TODO 8:
+    // DONE: _TODO 8:
     //  if COMPLEX_FIELD = true;  -> it should also show both values in the field e.g. when selecting a place in the map
 
     // TODO 9:
