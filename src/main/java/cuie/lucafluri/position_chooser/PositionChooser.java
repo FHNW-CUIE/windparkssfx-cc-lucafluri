@@ -30,13 +30,17 @@ public class PositionChooser extends Control {
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
 
-    // Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this project, that's why I left mine in here.
-    // But normally API-Keys should be kept secret
-    // A new personal API-Key can be generated at https://positionstack.com/
+    /**
+     * Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this
+     * project, that's why I left mine in here. Note: normally API-Keys should be kept secret.
+     * A new personal API-Key can be generated at https://positionstack.com/
+     */
     static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
-
-    static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
+    /**
+     * The following section contains the whole code for the needed regex for input validation.
+     */
+     static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
     // The following regex accepts:
     //   \\s*     -> unlimited spaces in all the places
     //   (...)    -> groups 1 and 2 for separate extraction for latitude and longitude
@@ -56,9 +60,10 @@ public class PositionChooser extends Control {
 
     private static final Pattern COORDINATE_PATTERN = Pattern.compile(COORDINATE_REGEX);
 
-    // All properties:
+    /**
+     * All properties:
+     */
     private final DoubleProperty latitude = new SimpleDoubleProperty();
-
     private final DoubleProperty longitude = new SimpleDoubleProperty();
     private final StringProperty city = new SimpleStringProperty();
     private final StringProperty region = new SimpleStringProperty();
@@ -292,9 +297,6 @@ public class PositionChooser extends Control {
         }
     }
 
-//    private boolean isInteger(String userInput) {
-//        return INTEGER_PATTERN.matcher(userInput).matches();
-//    }
 
     private boolean isCoordinate(String userInput) {
         return COORDINATE_PATTERN.matcher(userInput).matches();
@@ -316,8 +318,10 @@ public class PositionChooser extends Control {
         return String.format(FORMATTED_DOUBLE_PATTERN, newValue);
     }
 
-    // alle  Getter und Setter
 
+    /**
+     * All getters and setters:
+     */
     public double getLatitude() {
         return round(latitude.get(), 5);
     }

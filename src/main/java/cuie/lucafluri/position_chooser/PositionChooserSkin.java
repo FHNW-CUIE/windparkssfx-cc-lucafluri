@@ -46,7 +46,7 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
         }
     }
 
-    private static final String STYLE_CSS = "style.css";
+    private static final String STYLE_CSS = "positionChooser.css";
 
     // all parts
     private TextField editableNode;

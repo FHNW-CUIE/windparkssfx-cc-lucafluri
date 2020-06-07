@@ -38,7 +38,6 @@ class PositionChooserDropDown extends VBox {
     }
 
     private void initializeParts() {
-
         mapView = new MapView();
         mapView.setMapType(MapType.OSM);
         mapView.setZoom(10);
@@ -85,17 +84,13 @@ class PositionChooserDropDown extends VBox {
             posMarker.setPosition(new Coordinate((Double) newValue, positionChooser.getLongitude()));
             mapView.setCenter(positionChooser.getCoordinates());
             button.setDisable(false);
-
         }));
 
         positionChooser.longitudeProperty().addListener(((observable, oldValue, newValue) -> {
             posMarker.setPosition(new Coordinate(positionChooser.getLatitude(), (Double) newValue));
             mapView.setCenter(positionChooser.getCoordinates());
             button.setDisable(false);
-
         }));
-
-
     }
 
     private void setupBindings() {
