@@ -1,4 +1,4 @@
-package cuie.lucafluri.template_businesscontrol;
+package cuie.lucafluri.position_chooser;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,8 +21,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-//todo: umbenennen
-public class BusinessControl extends Control {
+public class PositionChooser extends Control {
     /**
      * The user can set here, whether the input field contains only the one value (e.g. the latitude),
      * or both the latitude and longitude (in this case, set to true)
@@ -36,64 +35,6 @@ public class BusinessControl extends Control {
     // A new personal API-Key can be generated at https://positionstack.com/
     static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
-    // DONE: _TODO 1:
-    //  alle Properties auflisten, die man verarbeiten will -> mit den getter/setters
-    //  -> Gemeinde, Kanton, Breite und Längengrade
-
-    // DONE: _TODO 2:
-    //  Alles in einem BusinessControl, z.B. Breitengrad-Feld
-
-    // DONE: _TODO 3a:
-    //  forgiving format folgende Eingabe verarbeiten:
-    //  - möglich: 47°21'59.7"N 8°32'22.9"E
-    //  - möglich: 47.366584, 8.539701
-    //  - Checks ob Breiten-/Längengrade auch in den erlaubten Ranges sind
-
-    // DONE: _TODO 4:
-    //  Idee: DropDown öffnet Karte, wo man die Position noch fein justieren kann
-    //  Nicht GoogleMaps, sondern OpenStreetMap
-
-    // DONE: _TODO 5:
-    //  Mit API aus Längen-/Breitengrade Gemeinde und Kanton ermitteln:
-    //  https://positionstack.com/
-    //  https://nominatim.org/
-    //  https://osmnames.org/
-    //  und die Response korrekt filtern, damit die 4 Properties korrekt gesetzt werden.
-
-    // TODO 6:
-    //  Styling
-
-    // DONE: _TODO 7:
-    //  make latitude and longitude also writeable (in the right side of the UI)
-
-    // DONE: _TODO 8:
-    //  if COMPLEX_FIELD = true;  -> it should also show both values in the field e.g. when selecting a place in the map
-
-    // TODO 9:
-    //  general code cleanup
-
-    // TODO 10:
-    //  README and documentation for implementation
-    //   e.g. show that you can go to https://www.latlong.net/, enter any address you want (e.g. Whitehouse), and then
-    //   from below the map, just copy/paste one of the following:
-    //      - the Lat Long (without the brackets):  38.897675, -77.036530
-    //      - the GPS Coordinates: 38° 53' 51.63'' N 77° 2' 11.508'' W
-    //  (you can have spaces in between, for seconds you can enter either '' or ", and much more...)
-
-    // DISMISSED: _TODO 11:
-    //  Inspect IntelliJ's warning about "Condition 'data.get("administrative_area").equals(null)' is always 'false'"
-    //  which occurs in the method setGeocodedValues() where equal-comparisons such as
-    //  "data.get("locality").equals(null)" happen
-    //  -> I changed the logic as suggested by intelliJ, but then the "autofill"-Button would cause the following errors
-    //  and autofill would not anymore work:
-    //       Exception in thread "JavaFX Application Thread" java.lang.ClassCastException:
-    //       class org.json.JSONObject$Null cannot be cast to class java.lang.String (org.json.JSONObject$Null is
-    //       in unnamed module of loader 'app'; java.lang.String is in module java.base of loader 'bootstrap')
-    //	     at cuie.lucafluri.template_businesscontrol.BusinessControl.setGeocodedValues(BusinessControl.java:279)
-
-    // TODO 12:
-    //  Remove increase/decrease function (and it's corresponding key bindings). Or massively enhance the functionality
-    //  for it to be actually useful
 
     static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
     // The following regex accepts:
@@ -118,7 +59,6 @@ public class BusinessControl extends Control {
     // All properties:
     private final DoubleProperty latitude = new SimpleDoubleProperty();
 
-    // TODO: to be implemented:
     private final DoubleProperty longitude = new SimpleDoubleProperty();
     private final StringProperty city = new SimpleStringProperty();
     private final StringProperty region = new SimpleStringProperty();
@@ -137,19 +77,17 @@ public class BusinessControl extends Control {
         }
     };
 
-    //todo: ergaenzen um convertible
-
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final StringProperty label = new SimpleStringProperty();
     private final StringProperty errorMessage = new SimpleStringProperty();
 
-    public BusinessControl() {
+    public PositionChooser() {
         initializeSelf();
         addValueChangeListener();
     }
 
     @Override protected Skin<?> createDefaultSkin() {
-        return new BusinessSkin(this);
+        return new PositionChooserSkin(this);
     }
 
     public void reset() {
@@ -284,7 +222,6 @@ public class BusinessControl extends Control {
                 setRegion(data.get("administrative_area").equals(null) ? "" : (String) data.get("administrative_area")); //Gemeinde
                 setCanton(data.get("region_code").equals(null) ? "" : (String) data.get("region_code")); //Kanton Kürzel
             }
-
     }
 
     /**

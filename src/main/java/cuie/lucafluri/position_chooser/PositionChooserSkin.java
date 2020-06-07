@@ -1,8 +1,7 @@
-package cuie.lucafluri.template_businesscontrol;
+package cuie.lucafluri.position_chooser;
 
 import java.util.Arrays;
 
-import com.sothawo.mapjfx.*;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -22,8 +21,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
-//todo: durch eigenen Skin ersetzen
-class BusinessSkin extends SkinBase<BusinessControl> {
+class PositionChooserSkin extends SkinBase<PositionChooser> {
     private static final int IMG_SIZE   = 12;
     private static final int IMG_OFFSET = 4;
 
@@ -40,7 +38,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
 
         State(final String text, final String file) {
             this.text = text;
-            String url = BusinessSkin.class.getResource("/icons/" + file).toExternalForm();
+            String url = PositionChooserSkin.class.getResource("/icons/" + file).toExternalForm();
             this.imageView = new ImageView(new Image(url,
                                                      IMG_SIZE, IMG_SIZE,
                                                      true, false));
@@ -62,7 +60,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
     private FadeTransition fadeOutValidIconAnimation;
 
 
-    BusinessSkin(BusinessControl control) {
+    PositionChooserSkin(PositionChooser control) {
         super(control);
         initializeSelf();
         initializeParts();
@@ -90,7 +88,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
         chooserButton = new Button(ANGLE_DOWN);
         chooserButton.getStyleClass().add("chooser-button");
 
-        dropDownChooser = new DropDownChooser(getSkinnable());
+        dropDownChooser = new PositionChooserDropDown(getSkinnable());
 
         popup = new Popup();
         popup.getContent().addAll(dropDownChooser);
@@ -195,8 +193,7 @@ class BusinessSkin extends SkinBase<BusinessControl> {
     }
 
     private void setupBindings() {
-        // TODO: ersetzen durch neues latitude / longitude - pattern
-        readOnlyNode.textProperty().bind(getSkinnable().latitudeProperty().asString(BusinessControl.FORMATTED_DOUBLE_PATTERN));
+        readOnlyNode.textProperty().bind(getSkinnable().latitudeProperty().asString(PositionChooser.FORMATTED_DOUBLE_PATTERN));
 
         editableNode.textProperty().bindBidirectional(getSkinnable().userFacingTextProperty());
 
