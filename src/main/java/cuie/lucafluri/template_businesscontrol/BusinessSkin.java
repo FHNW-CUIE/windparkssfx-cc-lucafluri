@@ -16,6 +16,7 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
@@ -146,6 +147,9 @@ class BusinessSkin extends SkinBase<BusinessControl> {
     }
 
     private void setupEventHandlers() {
+        editableNode.setOnAction(ev -> getSkinnable().reset());
+
+
         chooserButton.setOnAction(event -> {
             if (popup.isShowing()) {
                 popup.hide();
@@ -166,28 +170,16 @@ class BusinessSkin extends SkinBase<BusinessControl> {
         });
 
         editableNode.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case ESCAPE:
-                    getSkinnable().reset();
-                    event.consume();
-                    break;
-                case UP:
-                    getSkinnable().increase();
-                    event.consume();
-                    break;
-                case DOWN:
-                    getSkinnable().decrease();
-                    event.consume();
-                    break;
+            if (event.getCode() == KeyCode.ESCAPE) {
+                getSkinnable().reset();
+                event.consume();
             }
         });
     }
 
     private void setupValueChangedListeners() {
         getSkinnable().invalidProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-//                startInvalidInputAnimation();
-            } else {
+            if (!newValue) {
                 State.VALID.imageView.setOpacity(1.0);
                 startFadeOutValidIconTransition();
             }

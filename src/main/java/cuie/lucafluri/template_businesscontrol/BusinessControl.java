@@ -162,19 +162,12 @@ public class BusinessControl extends Control {
     }
 
     private void updateUserFacingText() {
+        setUserFacingText("");
         if (COMPLEX_FIELD) {
             setUserFacingText(convertToString(getLatitude()) + ", " + convertToString(getLongitude()));
         } else {
             setUserFacingText(convertToString(getLatitude()));
         }
-    }
-
-    public void increase() {
-        setLatitude(getLatitude() + 1);
-    }
-
-    public void decrease() {
-        setLatitude(getLatitude() - 1);
     }
 
     private void addValueChangeListener() {
@@ -280,9 +273,9 @@ public class BusinessControl extends Control {
     public void setGeocodedValues(){
             JSONObject data = getGeocodingJSON(getLatitude() + "," + getLongitude(), true);
             if(data != null){
-                setCity(data.get("locality").equals(null) ? "" : (String) data.get("locality")); //Standort
-                setRegion(data.get("administrative_area").equals(null) ? "" : (String) data.get("administrative_area")); //Gemeinde
-                setCanton(data.get("region_code").equals(null) ? "" : (String) data.get("region_code")); //Kanton Kürzel
+                if(!data.isNull("name")) setCity((String) data.get("name")); //Standort
+                if(!data.isNull("administrative_area")) setRegion((String) data.get("administrative_area")); //Gemeinde
+                if(!data.isNull("region_code")) setCanton((String) data.get("region_code")); //Kanton
             }
 
     }
