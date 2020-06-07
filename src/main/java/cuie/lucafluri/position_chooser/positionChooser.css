@@ -1,7 +1,10 @@
 .position-chooser {
-    -fx-padding:          10;
-    -base-color:          rgb(255, 201, 104);
+    /* color-palette values */
     -fx-background-color: rgb(255, 255, 250);
+    -base-color:          rgb(255, 201, 104);
+
+
+    -fx-padding:          10;
 }
 
 .position-chooser .drawing-pane {
@@ -40,7 +43,7 @@
 }
 
 .position-chooser .read-only-node {
-    -fx-font-family:     'DS-Digital';
+    -fx-font-family:     'Lato Regular';
     -fx-pref-width:      80;
     -fx-max-width:       1024;
     -fx-alignment:       center;

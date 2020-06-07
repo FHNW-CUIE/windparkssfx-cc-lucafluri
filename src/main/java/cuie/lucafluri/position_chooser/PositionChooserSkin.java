@@ -18,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
@@ -67,7 +66,7 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
 
     private void initializeSelf() {
         getSkinnable()
-                .loadFonts("/fonts/Lato/Lato-Lig.ttf", "/fonts/Lato/Lato-Reg.ttf", "/fonts/ds_digital/DS-DIGI.TTF",
+                .loadFonts("/fonts/Lato/Lato-Lig.ttf", "/fonts/Lato/Lato-Reg.ttf",
                         "/fonts/fontawesome-webfont.ttf");
         getSkinnable().addStylesheetFiles(STYLE_CSS);
     }

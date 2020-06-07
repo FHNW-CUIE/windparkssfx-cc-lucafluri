@@ -45,6 +45,7 @@ class PositionChooserDropDown extends VBox {
         posMarker = new Marker(getClass().getResource("/windrad.png"), -25, -50).setVisible(true);
 
         button = new Button("Autofill");
+        button.getStyleClass().add("button");
     }
 
     private void layoutParts() {
