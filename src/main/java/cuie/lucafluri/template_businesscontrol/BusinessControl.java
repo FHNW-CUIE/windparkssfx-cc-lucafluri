@@ -2,8 +2,6 @@ package cuie.lucafluri.template_businesscontrol;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,8 +101,8 @@ public class BusinessControl extends Control {
     //   (...)    -> groups 1 and 2 for separate extraction for latitude and longitude
     //   [,]?      -> optional comma, if you provide the longitude as well
     //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
-    //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 8 digits after the dot
-    private static final String D_REG = "\\s*([+-]?[\\d]{1,3}[.]?[\\d]{0,5})\\s*";
+    //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 9 digits after the dot
+    private static final String D_REG = "\\s*([+-]?[\\d]{1,3}[.]?[\\d]{0,9})\\s*";
     private static final String LAT_LONG_REG = COMPLEX_FIELD
             ? D_REG + "[,\\s]?" + D_REG
             : D_REG;

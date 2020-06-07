@@ -15,7 +15,7 @@ class DemoPane extends BorderPane {
     private TextField latitude;
     private TextField longitude;
     private TextField standort;
-    private TextField canton;
+    private TextField kanton;
     private TextField gemeinde;
 
     final private PresentationModel model;
@@ -34,7 +34,7 @@ class DemoPane extends BorderPane {
         latitude = new TextField();
         longitude = new TextField();
         standort = new TextField();
-        canton = new TextField();
+        kanton = new TextField();
         gemeinde = new TextField();
     }
 
@@ -46,7 +46,7 @@ class DemoPane extends BorderPane {
                 new Label("Longitude"), longitude,
                 new Label("Standort"), standort,
                 new Label("Gemeinde"), gemeinde,
-                new Label("Canton"), canton);
+                new Label("Kanton"), kanton);
         box.setPadding(new Insets(10));
         box.setSpacing(10);
         setRight(box);
@@ -78,7 +78,7 @@ class DemoPane extends BorderPane {
         // Bind the other values:
         standort.textProperty().bindBidirectional(model.pmCityProperty());
         gemeinde.textProperty().bindBidirectional(model.pmRegionProperty());
-        canton.textProperty().bindBidirectional(model.pmCantonProperty());
+        kanton.textProperty().bindBidirectional(model.pmCantonProperty());
 
         // The following bindings will be created by the oop2-student who implements our BusinessControl:
         businessControl.latitudeProperty().bindBidirectional(model.pmLatitudeProperty());

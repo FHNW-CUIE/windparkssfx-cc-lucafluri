@@ -9,6 +9,61 @@
 
 * *_Ergänzen Sie hier welche OOP2-Teams Ihr Projekt erfolgreich integriert haben._*
 
+
+=== Feature-Liste und Tipps für die Integration
+* _Was wird ersetzt?_
+** Mit unserem BusinessControl kann ein/eine OOP2-Student/in die beiden Felder _"Breitengrad" (Latitude)_ und
+_"Längengrad" (Longitude)_ ersetzen. Dabei besteht die Möglichkeit, beide Felder zu einem kombinierten Feld zusammenfügen,
+oder die Felder separat zu lassen und unser BusinessControl entsprechend nur in einem der Felder oder dann dupliziert
+in beiden Feldern zu implementieren.
+
+* _Switch "COMPLEX_FIELD":_
+** Am Anfang der Datei "BusinessControl.java" befindet sich ein boolean `COMPLEX_FIELD`: Der Benutzer kann hiermit wählen,
+ob er in einem Feld *nur* Latitude (oder Longitude) anzeigen und eingeben möchte, oder *beides* kombiniert.
+
+* _Features:_
+** Mittels DropDown-Pfeil eine *Karte* öffnen:
+*** Die Karte wird geöffnet und auf die dann bereits allfällig schon vorhandenen
+Koordinaten zentriert.
+*** Der Benutzer kann die Karte verschieben und zoomen und mittels Klick die Koordinaten neu setzen.
+** Mit dem Button "*Autofill*" können automatisch weitere Felder wie Standort, Gemeinde und Kanton ausgefüllt werden,
+sofern entsprechende Daten in OpenStreetMap verfügbar sind.
+*** Der/die OOP2-Student/in kann demzufolge auch ein Binding dieser drei Zusatzfelder vornehmen, falls er möchte.
+*** Hinweis: Wir benutzen das API von https://positionstack.com/ um auf
+die Daten von https://www.openstreetmap.org/ zuzugreifen.
+** Das *Eingabe-Feld* ermöglicht die Eingabe von *unterschiedlichen Formaten* und prüft jeweils die *Validität* dieser
+Eingabe. Die Eingabe wird, sobald sie valid ist, sofort übernommen und ua. auf der Karte aktualisiert. Mögliche Eingaben
+sind:
+*** Latitude, Longitude, zum Beispiel:
+**** `47.3459, 8.6605`
+**** `47 8`
+**** ...
+*** GPS Koordinaten (DMS-Format), zum Beispiel:
+**** `47° 20' 45.24'' N, 8° 39' 37.8'' E`
+**** `47°20'45.24"N,8°39'37.8"E`
+**** `47°0'0"N, 8°0'0"E`
+**** ...
+*** _Hinweise:_
+**** Es spielt keine Rolle, ob Leerzeichen dazwischen sind oder nicht.
+**** Das Komma zwischen Breiten-/Längengrad kann wahlweise auch weggelassen werden; dann muss jedoch mindestens ein
+Leerzeichen vorhanden sein.
+**** Im DMS-Format kann für die Sekunden-Eingabe sowohl das " - Zeichen verwendet werden, wie auch zwei einzelne ' -
+Zeichen.
+**** Auf https://www.latlong.net kann man einfach einen Ort suchen und erhält dann unter der Karte Lat/Long- oder
+GPS-Koordinaten für einfaches Copy/Paste in unser BusinessControl. Die Lat/Long-Koordinaten erhält man auch einfach via
+https://www.openstreetmap.org (mit Rechtsklick -> Adresse anzeigen) oder https://www.google.ch/maps (langer Klick auf
+Karte).
+**** Die Eingabe von 0 bis 9 Nachkommastellen ist erlaubt.
+**** Es wird überprüft, ob "Breitengrad" (Latitude) im erlaubten Bereich von ±90° und ob "Längengrad" (Longitude)" im
+erlaubten Bereich von ±180° ist.
+** *Fehlermeldung* beim Start:
+*** Beim Start vom Business-Control wird folgende Fehlermeldung gezeigt: `SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".` Wir haben viel Zeit
+investiert, der Ursache dieses Fehlers nachzugehen und ihn zu beheben und dabei verschiedene Lösungsansätze versucht.
+Der Fehler wird offenbar von einer der verwendeten Dependencies verursacht, auf die wir nicht wirklich Einfluss haben.
+Da dies jedoch die Funktionsweise der Applikation in keiner Weise beeinträchtigt, haben wir entschieden, diesen Fehler
+so stehen zu lassen.
+
+
 === Abgabe
 
 * *Mittwoch, 10.6.2020*, 20:42 Uhr
