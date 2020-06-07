@@ -1,8 +1,8 @@
 .drop-down-chooser {
     -fx-background-radius: 4;
 
-    -base-color:           rgb(255, 201, 104);
-    -secondary-color:      rgb(137, 101, 38);
+    -base-color:           rgb(255, 204, 128);
+    -secondary-color:      rgb(202, 155, 82);
     -fx-background-color:  derive(-base-color, +80%);
 
     -fx-effect:            dropshadow(gaussian, rgb(200, 200, 200), 5.0, 0.0, 2, 2);
@@ -16,10 +16,10 @@
 }
 
 .drop-down-chooser .button {
-    -fx-font-family: 'Lato Regular';
-    -fx-font-size:        14;
-    -fx-text-fill:        derive(-base-color, -70%);
-    -fx-background-color: derive(-secondary-color, +70%);
+    -fx-font-family:       'Lato Regular';
+    -fx-font-size:         14;
+    -fx-text-fill:         derive(-base-color, -70%);
+    -fx-background-color:  derive(-secondary-color, +50%);
     -fx-background-radius: 4;
-    -fx-effect:            dropshadow(gaussian, #9a9a9a, 5.0, 0.0, 2, 2);
+    -fx-effect:            dropshadow(gaussian, rgb(154, 154, 154), 5.0, 0.0, 2, 2);
 }
