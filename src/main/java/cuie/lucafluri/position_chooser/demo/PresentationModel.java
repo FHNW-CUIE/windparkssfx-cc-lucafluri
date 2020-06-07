@@ -1,4 +1,4 @@
-package cuie.lucafluri.template_businesscontrol.demo;
+package cuie.lucafluri.position_chooser.demo;
 
 import javafx.beans.property.*;
 import javafx.scene.paint.Color;

@@ -1,4 +1,4 @@
-package cuie.lucafluri.template_simplecontrol.demo;
+package cuie.lucafluri.position_chooser.demo;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -8,13 +8,13 @@ import javafx.stage.Stage;
 public class DemoStarter extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        PresentationModel pm        = new PresentationModel();
-        Region            rootPanel = new DemoPane(pm);
+    public void start(Stage primaryStage) throws Exception {
+        PresentationModel model = new PresentationModel();
+        Region rootPanel = new DemoPane(model);
 
         Scene scene = new Scene(rootPanel);
 
-        primaryStage.setTitle("Simple Control Demo");
+        primaryStage.setTitle("Business Control Demo");
         primaryStage.setScene(scene);
 
         primaryStage.show();

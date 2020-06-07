@@ -1,4 +1,4 @@
-package cuie.lucafluri.template_businesscontrol.demo;
+package cuie.lucafluri.position_chooser.demo;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -6,11 +6,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import cuie.lucafluri.template_businesscontrol.BusinessControl;
+import cuie.lucafluri.position_chooser.PositionChooser;
 import javafx.util.StringConverter;
 
 class DemoPane extends BorderPane {
-    private BusinessControl businessControl;
+    private PositionChooser positionChooser;
 
     private TextField latitude;
     private TextField longitude;
@@ -30,7 +30,7 @@ class DemoPane extends BorderPane {
 
     private void initializeControls() {
         setPadding(new Insets(10));
-        businessControl = new BusinessControl();
+        positionChooser = new PositionChooser();
         latitude = new TextField();
         longitude = new TextField();
         standort = new TextField();
@@ -39,7 +39,7 @@ class DemoPane extends BorderPane {
     }
 
     private void layoutControls() {
-        setCenter(businessControl);
+        setCenter(positionChooser);
         VBox box = new VBox(10,
                 new Label("Business Control Properties"),
                 new Label("Latitude"), latitude,
@@ -81,10 +81,10 @@ class DemoPane extends BorderPane {
         kanton.textProperty().bindBidirectional(model.pmCantonProperty());
 
         // The following bindings will be created by the oop2-student who implements our BusinessControl:
-        businessControl.latitudeProperty().bindBidirectional(model.pmLatitudeProperty());
-        businessControl.longitudeProperty().bindBidirectional(model.pmLongitudeProperty());
-        businessControl.cityProperty().bindBidirectional(model.pmCityProperty());
-        businessControl.regionProperty().bindBidirectional(model.pmRegionProperty());
-        businessControl.cantonProperty().bindBidirectional(model.pmCantonProperty());
+        positionChooser.latitudeProperty().bindBidirectional(model.pmLatitudeProperty());
+        positionChooser.longitudeProperty().bindBidirectional(model.pmLongitudeProperty());
+        positionChooser.cityProperty().bindBidirectional(model.pmCityProperty());
+        positionChooser.regionProperty().bindBidirectional(model.pmRegionProperty());
+        positionChooser.cantonProperty().bindBidirectional(model.pmCantonProperty());
     }
 }
