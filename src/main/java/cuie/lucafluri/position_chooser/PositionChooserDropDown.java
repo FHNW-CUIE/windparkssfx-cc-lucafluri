@@ -66,6 +66,7 @@ class PositionChooserDropDown extends VBox {
         mapView.addEventHandler(MapViewEvent.MAP_CLICKED, ev -> {
             positionChooser.setLatitude(ev.getCoordinate().getLatitude());
             positionChooser.setLongitude(ev.getCoordinate().getLongitude());
+            PositionChooser.debugPrint("Map clicked, new coordinates:", positionChooser.getUserFacingText(), false);
         });
     }
 

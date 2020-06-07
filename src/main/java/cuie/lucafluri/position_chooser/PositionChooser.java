@@ -2,6 +2,8 @@ package cuie.lucafluri.position_chooser;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,10 +25,16 @@ import java.net.URL;
 
 public class PositionChooser extends Control {
     /**
-     * The user can set here, whether the input field contains only the one value (e.g. the latitude),
+     * The user can toggle, whether the input field contains only the one value (e.g. the latitude),
      * or both the latitude and longitude (in this case, set to true).
      */
     private static final boolean COMPLEX_FIELD = true;
+
+    /**
+     * The user can toggle, whether he wants more detailed debugging. This toggle is used in
+     * the method debugPrint(...).
+     */
+    private static final boolean DETAILED_DEBUGGING = true;
 
     /**
      * Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this
@@ -37,7 +45,6 @@ public class PositionChooser extends Control {
 
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
-
 
     // --------------------------------------- //
     // Section for regex for input validation: //
@@ -51,18 +58,14 @@ public class PositionChooser extends Control {
     //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
     //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 9 digits after the dot
     private static final String D_REG = "\\s*([+-]?[\\d]{1,3}[.]?[\\d]{0,9})\\s*";
-    private static final String LAT_LONG_REG = COMPLEX_FIELD
-            ? D_REG + "[,\\s]?" + D_REG
-            : D_REG;
+    private static final String LAT_LONG_REG = COMPLEX_FIELD ? D_REG + "[,\\s]?" + D_REG : D_REG;
     // DMS (degree, minutes, seconds) - format. See also https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees
     private static final String DMS_REG = "\\s*([\\d]{1,3})°\\s*([\\d]{1,2})'\\s*([\\d]{1,2}([.][\\d]{1,5})?)(\"|'')\\s*";
-    private static final String DMS_FULL_REG = COMPLEX_FIELD
-            ? "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG + "([EW]))\\s*"
-            : "(" + DMS_REG + "([NS]))\\s*";
+    private static final String DMS_FULL_REG = COMPLEX_FIELD ? "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG
+            + "([EW]))\\s*" : "(" + DMS_REG + "([NS]))\\s*";
     private static final String COORDINATE_REGEX = LAT_LONG_REG + "|" + DMS_FULL_REG;
 
     private static final Pattern COORDINATE_PATTERN = Pattern.compile(COORDINATE_REGEX);
-
 
     // -------------------------------- //
     // Section with all the properties: //
@@ -90,7 +93,6 @@ public class PositionChooser extends Control {
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final StringProperty label = new SimpleStringProperty();
     private final StringProperty errorMessage = new SimpleStringProperty();
-
 
     // ------------------------------------------------- //
     // Section for constructor, resetting, initializing, //
@@ -126,7 +128,6 @@ public class PositionChooser extends Control {
             setUserFacingText(convertToString(getLatitude()));
         }
     }
-
 
     /**
      * Value change listeners:
@@ -229,7 +230,6 @@ public class PositionChooser extends Control {
         });
     }
 
-
     // ------------------ //
     // Section geocoding: //
     // ------------------ //
@@ -245,7 +245,6 @@ public class PositionChooser extends Control {
             if (!data.isNull("region_code")) setCanton((String) data.get("region_code")); //Kanton
         }
     }
-
 
     /**
      * Geocoding conversion.
@@ -300,7 +299,7 @@ public class PositionChooser extends Control {
             JSONArray data = (JSONArray) json.get("data");
             JSONObject first = (JSONObject) data.get(0);
 //            System.out.println("JSON String Result " + first.get("country"));
-            System.out.println(first);
+            debugPrint("JSON-Object received", first, false);
             return first;
         } else {
             System.err.println("API CALL ERROR");
@@ -308,14 +307,18 @@ public class PositionChooser extends Control {
         }
     }
 
-
     // ----------------------------------  //
     // Section for various helper methods: //
     // ----------------------------------  //
 
     public void loadFonts(String... font) {
         for (String f : font) {
-            Font.loadFont(getClass().getResourceAsStream(f), 0);
+            Font success = Font.loadFont(getClass().getResourceAsStream(f), 0);
+            if (success != null) {
+                debugPrint("Font loaded", f, false);
+            } else {
+                debugPrint("ERROR with loading font", f, true);
+            }
         }
     }
 
@@ -346,6 +349,36 @@ public class PositionChooser extends Control {
         return String.format(FORMATTED_DOUBLE_PATTERN, newValue);
     }
 
+    /**
+     * Even though I could have used log4j or other similar loggers, I decided to create my own logger,
+     * where I can create the message however I like.
+     * <p>
+     * This logger will print everything to System.out, but with custom colors and an additional time and date.
+     *
+     * @param title       Title of the message
+     * @param object      Any object, from which it will parse a string (similar strategy like System.out.println(...) uses)
+     * @param useRedColor set this to true, if you want the title to appear with a red color
+     */
+    public static void debugPrint(String title, Object object, boolean useRedColor) {
+        if (DETAILED_DEBUGGING) {
+            // Various colors, for colored terminal output:
+            // For more colors, see https://en.wikipedia.org/wiki/ANSI_escape_code
+            // For usage of these colors in Java, see for example the following post:
+            // https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+            final String ansiReset = "\u001B[0m";
+            final String ansiYellow = "\u001B[33m";
+            final String ansiCyan = "\u001B[36m";
+            final String ansiRed = "\u001B[31m";
+
+            System.out.println();
+            String s = String.valueOf(object);
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            System.out
+                    .printf("%s[%s] %s- %s: %s%s%s\n", ansiYellow, dtf.format(now), useRedColor ? ansiRed : ansiYellow,
+                            title, ansiCyan, s, ansiReset);
+        }
+    }
 
     // -----------------------  //
     // All getters and setters: //

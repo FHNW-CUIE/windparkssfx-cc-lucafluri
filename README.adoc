@@ -13,13 +13,18 @@
 === Feature-Liste und Tipps für die Integration
 * _Was wird ersetzt?_
 ** Mit unserem BusinessControl kann ein/eine OOP2-Student/in die beiden Felder _"Breitengrad" (Latitude)_ und
-_"Längengrad" (Longitude)_ ersetzen. Dabei besteht die Möglichkeit, beide Felder zu einem kombinierten Feld zusammenfügen,
-oder die Felder separat zu lassen und unser BusinessControl entsprechend nur in einem der Felder oder dann dupliziert
-in beiden Feldern zu implementieren.
+_"Längengrad" (Longitude)_ ersetzen. Dabei besteht die Möglichkeit, beide Felder zu einem kombinierten Feld
+zusammenfügen, oder die Felder separat zu lassen und unser BusinessControl entsprechend nur in einem der Felder oder
+dann dupliziert in beiden Feldern zu implementieren.
 
-* _Switch "COMPLEX_FIELD":_
-** Am Anfang der Datei "BusinessControl.java" befindet sich ein boolean `COMPLEX_FIELD`: Der Benutzer kann hiermit wählen,
-ob er in einem Feld *nur* Latitude (oder Longitude) anzeigen und eingeben möchte, oder *beides* kombiniert.
+* _Boolean "COMPLEX_FIELD" und "DETAILED_DEBUGGING":_
+** Am Anfang der Datei "PositionChooser.java" befindet sich zwei boolean Werte, die der /die OOP2-Student/in je nach
+gewünschtem Verhalten auf `true` oder `false` setzen kann.
+** `COMPLEX_FIELD`: Der Benutzer kann hiermit wählen, ob er in einem Feld *nur* Latitude (oder Longitude) anzeigen und
+eingeben möchte, oder *beides* kombiniert.
+** `DETAILED_DEBUGGING`: Der Benutzer kann hiermit wählen, ob er ein detaillierteres Logging haben möchte. Zum Beispiel
+würde dann im Terminal ausgedruckt, welche Fonts geladen werden oder wie das JSON-Objekt aussieht, welches von der API
+zurückgegeben wird beim Klick auf "Auto-Fill").
 
 * _Features:_
 ** Mittels DropDown-Pfeil eine *Karte* öffnen:
