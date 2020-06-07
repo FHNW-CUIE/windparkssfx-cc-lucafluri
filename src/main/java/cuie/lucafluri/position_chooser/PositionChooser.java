@@ -39,7 +39,7 @@ public class PositionChooser extends Control {
     /**
      * Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this
      * project, that's why I left mine in here. Note: normally API-Keys should be kept secret.
-     * A new personal API-Key can be generated at https://positionstack.com/
+     * A new personal API-Key can be generated at https://positionstack.com/quickstart
      */
     static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
