@@ -2,6 +2,8 @@ package cuie.lucafluri.position_chooser;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,18 +25,30 @@ import java.net.URL;
 
 public class PositionChooser extends Control {
     /**
-     * The user can set here, whether the input field contains only the one value (e.g. the latitude),
-     * or both the latitude and longitude (in this case, set to true)
+     * The user can toggle, whether the input field contains only the one value (e.g. the latitude),
+     * or both the latitude and longitude (in this case, set to true).
      */
     private static final boolean COMPLEX_FIELD = true;
+
+    /**
+     * The user can toggle, whether he wants more detailed debugging. This toggle is used in
+     * the method debugPrint(...).
+     */
+    private static final boolean DETAILED_DEBUGGING = true;
+
+    /**
+     * Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this
+     * project, that's why I left mine in here. Note: normally API-Keys should be kept secret.
+     * A new personal API-Key can be generated at https://positionstack.com/quickstart
+     */
+    static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
+
     private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
     private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
 
-    // Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this project, that's why I left mine in here.
-    // But normally API-Keys should be kept secret
-    // A new personal API-Key can be generated at https://positionstack.com/quickstart
-    static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
-
+    // --------------------------------------- //
+    // Section for regex for input validation: //
+    // --------------------------------------- //
 
     static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
     // The following regex accepts:
@@ -44,21 +58,20 @@ public class PositionChooser extends Control {
     //   ([+-]?[\d]{1,2}[.]?[\d]{0,8})
     //      -> this group exists twice: accepting + or -, 1 or 2 digits in front of the dot, and 0 to 9 digits after the dot
     private static final String D_REG = "\\s*([+-]?[\\d]{1,3}[.]?[\\d]{0,9})\\s*";
-    private static final String LAT_LONG_REG = COMPLEX_FIELD
-            ? D_REG + "[,\\s]?" + D_REG
-            : D_REG;
+    private static final String LAT_LONG_REG = COMPLEX_FIELD ? D_REG + "[,\\s]?" + D_REG : D_REG;
     // DMS (degree, minutes, seconds) - format. See also https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees
     private static final String DMS_REG = "\\s*([\\d]{1,3})°\\s*([\\d]{1,2})'\\s*([\\d]{1,2}([.][\\d]{1,5})?)(\"|'')\\s*";
-    private static final String DMS_FULL_REG = COMPLEX_FIELD
-            ? "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG + "([EW]))\\s*"
-            : "(" + DMS_REG + "([NS]))\\s*";
+    private static final String DMS_FULL_REG = COMPLEX_FIELD ? "(" + DMS_REG + "([NS]))\\s*[,\\s]?\\s*(" + DMS_REG
+            + "([EW]))\\s*" : "(" + DMS_REG + "([NS]))\\s*";
     private static final String COORDINATE_REGEX = LAT_LONG_REG + "|" + DMS_FULL_REG;
 
     private static final Pattern COORDINATE_PATTERN = Pattern.compile(COORDINATE_REGEX);
 
-    // All properties:
-    private final DoubleProperty latitude = new SimpleDoubleProperty();
+    // -------------------------------- //
+    // Section with all the properties: //
+    // -------------------------------- //
 
+    private final DoubleProperty latitude = new SimpleDoubleProperty();
     private final DoubleProperty longitude = new SimpleDoubleProperty();
     private final StringProperty city = new SimpleStringProperty();
     private final StringProperty region = new SimpleStringProperty();
@@ -81,6 +94,14 @@ public class PositionChooser extends Control {
     private final StringProperty label = new SimpleStringProperty();
     private final StringProperty errorMessage = new SimpleStringProperty();
 
+    // ------------------------------------------------- //
+    // Section for constructor, resetting, initializing, //
+    // updating, and value change listeners:             //
+    // ------------------------------------------------- //
+
+    /**
+     * Constructor
+     */
     public PositionChooser() {
         initializeSelf();
         addValueChangeListener();
@@ -95,7 +116,7 @@ public class PositionChooser extends Control {
     }
 
     private void initializeSelf() {
-        getStyleClass().add("business-control");
+        getStyleClass().add("position-chooser");
         updateUserFacingText();
     }
 
@@ -108,6 +129,9 @@ public class PositionChooser extends Control {
         }
     }
 
+    /**
+     * Value change listeners:
+     */
     private void addValueChangeListener() {
         userFacingText.addListener((observable, oldValue, userInput) -> {
             if (isMandatory() && (userInput == null || userInput.isEmpty())) {
@@ -177,7 +201,6 @@ public class PositionChooser extends Control {
                         setInvalid(true);
                         setErrorMessage("invalid latitude / longitude ranges");
                     }
-
                 }
             } else {
                 setInvalid(true);
@@ -207,14 +230,20 @@ public class PositionChooser extends Control {
         });
     }
 
+    // ------------------ //
+    // Section geocoding: //
+    // ------------------ //
 
-    public void setGeocodedValues(){
-            JSONObject data = getGeocodingJSON(getLatitude() + "," + getLongitude(), true);
-            if(data != null){
-                if(!data.isNull("name")) setCity((String) data.get("name")); //Standort
-                if(!data.isNull("administrative_area")) setRegion((String) data.get("administrative_area")); //Gemeinde
-                if(!data.isNull("region_code")) setCanton((String) data.get("region_code")); //Kanton
-            }
+    /**
+     * Extracting the relevant information from the JSONObject from the geocoding conversion:
+     */
+    public void setGeocodedValues() {
+        JSONObject data = getGeocodingJSON(getLatitude() + "," + getLongitude(), true);
+        if (data != null) {
+            if (!data.isNull("name")) setCity((String) data.get("name")); //Standort
+            if (!data.isNull("administrative_area")) setRegion((String) data.get("administrative_area")); //Gemeinde
+            if (!data.isNull("region_code")) setCanton((String) data.get("region_code")); //Kanton
+        }
     }
 
     /**
@@ -247,8 +276,7 @@ public class PositionChooser extends Control {
         if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader in = null;
             try {
-                in = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream()));
+                in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -271,7 +299,7 @@ public class PositionChooser extends Control {
             JSONArray data = (JSONArray) json.get("data");
             JSONObject first = (JSONObject) data.get(0);
 //            System.out.println("JSON String Result " + first.get("country"));
-            System.out.println(first);
+            debugPrint("JSON-Object received", first, false);
             return first;
         } else {
             System.err.println("API CALL ERROR");
@@ -279,9 +307,18 @@ public class PositionChooser extends Control {
         }
     }
 
+    // ----------------------------------  //
+    // Section for various helper methods: //
+    // ----------------------------------  //
+
     public void loadFonts(String... font) {
         for (String f : font) {
-            Font.loadFont(getClass().getResourceAsStream(f), 0);
+            Font success = Font.loadFont(getClass().getResourceAsStream(f), 0);
+            if (success != null) {
+                debugPrint("Font loaded", f, false);
+            } else {
+                debugPrint("ERROR with loading font", f, true);
+            }
         }
     }
 
@@ -291,10 +328,6 @@ public class PositionChooser extends Control {
             getStylesheets().add(stylesheet);
         }
     }
-
-//    private boolean isInteger(String userInput) {
-//        return INTEGER_PATTERN.matcher(userInput).matches();
-//    }
 
     private boolean isCoordinate(String userInput) {
         return COORDINATE_PATTERN.matcher(userInput).matches();
@@ -316,7 +349,40 @@ public class PositionChooser extends Control {
         return String.format(FORMATTED_DOUBLE_PATTERN, newValue);
     }
 
-    // alle  Getter und Setter
+    /**
+     * Even though I could have used log4j or other similar loggers, I decided to create my own logger,
+     * where I can create the message however I like.
+     * <p>
+     * This logger will print everything to System.out, but with custom colors and an additional time and date.
+     *
+     * @param title       Title of the message
+     * @param object      Any object, from which it will parse a string (similar strategy like System.out.println(...) uses)
+     * @param useRedColor set this to true, if you want the title to appear with a red color
+     */
+    public static void debugPrint(String title, Object object, boolean useRedColor) {
+        if (DETAILED_DEBUGGING) {
+            // Various colors, for colored terminal output:
+            // For more colors, see https://en.wikipedia.org/wiki/ANSI_escape_code
+            // For usage of these colors in Java, see for example the following post:
+            // https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+            final String ansiReset = "\u001B[0m";
+            final String ansiYellow = "\u001B[33m";
+            final String ansiCyan = "\u001B[36m";
+            final String ansiRed = "\u001B[31m";
+
+            System.out.println();
+            String s = String.valueOf(object);
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            System.out
+                    .printf("%s[%s] %s- %s: %s%s%s\n", ansiYellow, dtf.format(now), useRedColor ? ansiRed : ansiYellow,
+                            title, ansiCyan, s, ansiReset);
+        }
+    }
+
+    // -----------------------  //
+    // All getters and setters: //
+    // -----------------------  //
 
     public double getLatitude() {
         return round(latitude.get(), 5);
