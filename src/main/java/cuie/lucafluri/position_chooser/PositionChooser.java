@@ -116,7 +116,7 @@ public class PositionChooser extends Control {
     }
 
     private void initializeSelf() {
-        getStyleClass().add("business-control");
+        getStyleClass().add("position-chooser");
         updateUserFacingText();
     }
 

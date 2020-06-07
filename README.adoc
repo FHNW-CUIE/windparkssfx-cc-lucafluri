@@ -12,9 +12,9 @@
 
 === Feature-Liste und Tipps für die Integration
 * _Was wird ersetzt?_
-** Mit unserem BusinessControl kann ein/eine OOP2-Student/in die beiden Felder _"Breitengrad" (Latitude)_ und
+** Mit unserem BusinessControl "PositionChooser" kann ein/eine OOP2-Student/in die beiden Felder _"Breitengrad" (Latitude)_ und
 _"Längengrad" (Longitude)_ ersetzen. Dabei besteht die Möglichkeit, beide Felder zu einem kombinierten Feld
-zusammenfügen, oder die Felder separat zu lassen und unser BusinessControl entsprechend nur in einem der Felder oder
+zusammenfügen, oder die Felder separat zu lassen und unseren PositionChooser entsprechend nur in einem der Felder oder
 dann dupliziert in beiden Feldern zu implementieren.
 
 * _Boolean "COMPLEX_FIELD" und "DETAILED_DEBUGGING":_
@@ -49,24 +49,25 @@ sind:
 **** `47°0'0"N, 8°0'0"E`
 **** ...
 *** _Hinweise:_
+**** Durch Drücken der `ENTER`-Taste wird die Eingabe in das Standard-Format konvertiert, also xx.xxxxx, yy.yyyyy
 **** Es spielt keine Rolle, ob Leerzeichen dazwischen sind oder nicht.
 **** Das Komma zwischen Breiten-/Längengrad kann wahlweise auch weggelassen werden; dann muss jedoch mindestens ein
 Leerzeichen vorhanden sein.
 **** Im DMS-Format kann für die Sekunden-Eingabe sowohl das " - Zeichen verwendet werden, wie auch zwei einzelne ' -
 Zeichen.
 **** Auf https://www.latlong.net kann man einfach einen Ort suchen und erhält dann unter der Karte Lat/Long- oder
-GPS-Koordinaten für einfaches Copy/Paste in unser BusinessControl. Die Lat/Long-Koordinaten erhält man auch einfach via
+GPS-Koordinaten für einfaches Copy/Paste in unseren PositionChooser. Die Lat/Long-Koordinaten erhält man auch einfach via
 https://www.openstreetmap.org (mit Rechtsklick -> Adresse anzeigen) oder https://www.google.ch/maps (langer Klick auf
 Karte).
 **** Die Eingabe von 0 bis 9 Nachkommastellen ist erlaubt.
 **** Es wird überprüft, ob "Breitengrad" (Latitude) im erlaubten Bereich von ±90° und ob "Längengrad" (Longitude)" im
 erlaubten Bereich von ±180° ist.
 ** *Fehlermeldung* beim Start:
-*** Beim Start vom Business-Control wird folgende Fehlermeldung gezeigt: `SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".` Wir haben viel Zeit
-investiert, der Ursache dieses Fehlers nachzugehen und ihn zu beheben und dabei verschiedene Lösungsansätze versucht.
-Der Fehler wird offenbar von einer der verwendeten Dependencies verursacht, auf die wir nicht wirklich Einfluss haben.
-Da dies jedoch die Funktionsweise der Applikation in keiner Weise beeinträchtigt, haben wir entschieden, diesen Fehler
-so stehen zu lassen.
+*** Beim Start vom PositionChooser wird folgende Fehlermeldung gezeigt:
+`SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".` Wir haben viel Zeit investiert, der Ursache dieses
+Fehlers nachzugehen und ihn zu beheben und dabei verschiedene Lösungsansätze versucht. Der Fehler wird offenbar von
+einer der verwendeten Dependencies verursacht, auf die wir nicht wirklich Einfluss haben. Da dies jedoch die
+Funktionsweise der Applikation in keiner Weise beeinträchtigt, haben wir entschieden, diesen Fehler so stehenzulassen.
 
 
 === Abgabe

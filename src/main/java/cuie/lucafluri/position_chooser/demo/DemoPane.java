@@ -41,7 +41,7 @@ class DemoPane extends BorderPane {
     private void layoutControls() {
         setCenter(positionChooser);
         VBox box = new VBox(10,
-                new Label("Business Control Properties"),
+                new Label("Position Chooser Properties"),
                 new Label("Latitude"), latitude,
                 new Label("Longitude"), longitude,
                 new Label("Standort"), standort,
@@ -80,7 +80,7 @@ class DemoPane extends BorderPane {
         gemeinde.textProperty().bindBidirectional(model.pmRegionProperty());
         kanton.textProperty().bindBidirectional(model.pmCantonProperty());
 
-        // The following bindings will be created by the oop2-student who implements our BusinessControl:
+        // The following bindings will be created by the oop2-student who implements our PositionChooser:
         positionChooser.latitudeProperty().bindBidirectional(model.pmLatitudeProperty());
         positionChooser.longitudeProperty().bindBidirectional(model.pmLongitudeProperty());
         positionChooser.cityProperty().bindBidirectional(model.pmCityProperty());

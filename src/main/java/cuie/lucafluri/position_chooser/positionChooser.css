@@ -1,45 +1,45 @@
-.business-control {
+.position-chooser {
     -fx-padding:          10;
     -base-color:          rgb(255, 201, 104);
     -fx-background-color: rgb(255, 255, 250);
 }
 
-.business-control .drawing-pane {
+.position-chooser .drawing-pane {
     -fx-background-color: transparent;
 }
 
-.business-control .editable-node {
+.position-chooser .editable-node {
     -fx-font-family:      'Lato Regular';
     -fx-font-size:        14;
     -fx-text-fill:        derive(-base-color, -30%);
     -fx-prompt-text-fill: derive(-base-color, 40%);
 }
 
-.business-control .editable-node:focused {
+.position-chooser .editable-node:focused {
     -fx-prompt-text-fill: derive(-base-color, 40%);
     -fx-highlight-fill:   derive(-base-color, -30%);
 }
 
-.business-control:invalid .editable-node {
+.position-chooser:invalid .editable-node {
     -fx-font-family: 'Lato Light';
     -fx-text-fill:   red;
 }
 
-.business-control:mandatory .editable-node {
+.position-chooser:mandatory .editable-node {
     -fx-background-color: white;
     -fx-border-color:     derive(-base-color, -30%);
     -fx-border-width:     2;
     -fx-border-radius:    4;
 }
 
-.business-control:mandatory .editable-node:focused {
+.position-chooser:mandatory .editable-node:focused {
     -fx-background-color: white;
     -fx-border-color:     derive(-base-color, -30%);
     -fx-border-width:     2;
     -fx-border-radius:    4;
 }
 
-.business-control .read-only-node {
+.position-chooser .read-only-node {
     -fx-font-family:     'DS-Digital';
     -fx-pref-width:      80;
     -fx-max-width:       1024;
@@ -49,7 +49,7 @@
     -fx-text-fill:       rgb(139, 86, 70);
 }
 
-.business-control .chooser-button {
+.position-chooser .chooser-button {
     -fx-font-family:      'FontAwesome';
     -fx-border-color:     transparent;
     -fx-background-color: transparent;
@@ -62,7 +62,7 @@
     -fx-cursor:           hand;
 }
 
-.business-control .chooser-button:hover {
+.position-chooser .chooser-button:hover {
     -fx-background-color:  derive(-base-color, 70%);
     -fx-background-radius: 1024;
     -fx-background-insets: 4;

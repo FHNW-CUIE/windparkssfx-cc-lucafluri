@@ -208,10 +208,4 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
         }
         invalidInputAnimation.play();
     }
-
-    private void loadFonts(String... font) {
-        for (String f : font) {
-            Font.loadFont(getClass().getResourceAsStream(f), 0);
-        }
-    }
 }
