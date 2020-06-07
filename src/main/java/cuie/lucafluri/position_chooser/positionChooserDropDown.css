@@ -1,25 +1,51 @@
 .drop-down-chooser {
     -fx-background-radius: 4;
 
-    -base-color:           rgb(255, 204, 128);
-    -secondary-color:      rgb(202, 155, 82);
-    -fx-background-color:  derive(-base-color, +80%);
+    /*
+     * ======================
+     * START of color-palette
+     * ======================
+     * Hint 1: With the following tool, you can find and generate nice colors: https://material.io/resources/color
+     * Hint 2: In IntelliJ IDEA, with a right-click on  rgb(255, 204, 128), you can easily convert it to HEX or other
+     *         formats (and vice-versa)
+     * Hint 3: In IntelliJ IDEA; you can click on the color-icon on the left and then easily adjust the color
+     */
 
-    -fx-effect:            dropshadow(gaussian, rgb(200, 200, 200), 5.0, 0.0, 2, 2);
+    -base-color:      rgb(255, 204, 128);
+    -secondary-color: rgb(202, 155, 82);
 
-    -fx-pref-width:    150;
-    -fx-border-width:  1;
-    -fx-border-radius: 4;
-    -fx-border-color:  rgb(200, 200, 200);
-    -fx-spacing:       10;
-    -fx-padding:       10;
+    /*-base-color:      rgb(100, 216, 203);*/
+    /*-secondary-color: rgb(0, 118, 108);*/
+
+    /*-base-color:      rgb(255, 138, 80);*/
+    /*-secondary-color: rgb(196, 28, 0);*/
+
+    -shadow-color-1:  rgb(200, 200, 200);
+    -shadow-color-2:  rgb(154, 154, 154);
+    -border-color:    rgb(189, 189, 189);
+
+    /*
+     * ====================
+     * END of color-palette
+     * ====================
+     */
+
+    -fx-effect:           dropshadow(gaussian, -shadow-color-1, 5.0, 0.0, 2, 2);
+    -fx-pref-width:       150;
+    -fx-border-width:     1;
+    -fx-border-radius:    4;
+    -fx-background-color: derive(-base-color, +80%);
+    -fx-border-color:     -border-color;
+    -fx-spacing:          10;
+    -fx-padding:          10;
 }
+
 
 .drop-down-chooser .button {
     -fx-font-family:       'Lato Regular';
     -fx-font-size:         14;
     -fx-text-fill:         derive(-base-color, -70%);
-    -fx-background-color:  derive(-secondary-color, +50%);
+    -fx-background-color:  -secondary-color;
     -fx-background-radius: 4;
-    -fx-effect:            dropshadow(gaussian, rgb(154, 154, 154), 5.0, 0.0, 2, 2);
+    -fx-effect:            dropshadow(gaussian, -shadow-color-2, 5.0, 0.0, 2, 2);
 }

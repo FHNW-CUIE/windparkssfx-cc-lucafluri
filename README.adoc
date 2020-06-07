@@ -26,7 +26,16 @@ eingeben möchte, oder *beides* kombiniert.
 würde dann im Terminal ausgedruckt, welche Fonts geladen werden oder wie das JSON-Objekt aussieht, welches von der API
 zurückgegeben wird beim Klick auf "Auto-Fill").
 
-* _Features:_
+* _Farben und Farbschema:_
+** In den beiden CSS-Dateien positionChooser.css sowie positionChooserDropDown.css kann der/die OOP2-Student/in wie
+folgt das Farbschema einfach ändern: Fast zuoberst bei den jeweiligen CSS Dateien gibt es je einen Bereich für die
+Farbpalette, markiert mit `* START of color-palette`. Da sind alle verwendeten Farben jeweils zentral aufgelistet. Von
+`-base-color` werden später im CSS einige Farb-Varianten abgeleitet.
+** Es sind bereits drei verschiedene Farbschemas hinterlegt, zwischen einfach umgeschaltet werden kann, indem man die
+entsprechenden Werte (aus-)kommentiert.
+** Hinweis: Online-Tools wie https://material.io/resources/color können helfen, ein Farbschema für sich zu finden.
+
+* _Weitere Features:_
 ** Mittels DropDown-Pfeil eine *Karte* öffnen:
 *** Die Karte wird geöffnet und auf die dann bereits allfällig schon vorhandenen
 Koordinaten zentriert.

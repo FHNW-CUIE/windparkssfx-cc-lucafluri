@@ -1,10 +1,27 @@
 .position-chooser {
-    /* color-palette values */
-    -fx-background-color: rgb(255, 255, 250);
-    -base-color:          rgb(255, 204, 128);
-
-
     -fx-padding:          10;
+
+    /*
+     * ======================
+     * START of color-palette
+     * ======================
+     * Hint 1: With the following tool, you can find and generate nice colors: https://material.io/resources/color
+     * Hint 2: In IntelliJ IDEA, with a right-click on  rgb(255, 204, 128), you can easily convert it to HEX or other
+     *         formats (and vice-versa)
+     * Hint 3: In IntelliJ IDEA; you can click on the color-icon on the left and then easily adjust the color
+     */
+
+    -base-color:          rgb(255, 204, 128);
+    /*-base-color:          rgb(100, 216, 203);*/
+    /*-base-color:          rgb(255, 138, 80);*/
+
+    -fx-background-color: rgb(255, 255, 250);
+
+    /*
+     * ====================
+     * END of color-palette
+     * ====================
+     */
 }
 
 .position-chooser .drawing-pane {
@@ -49,7 +66,7 @@
     -fx-alignment:       center;
     -fx-content-display: text-only;
     -fx-font-size:       22;
-    -fx-text-fill:       rgb(139, 86, 70);
+    -fx-text-fill:       derive(-base-color, -60%);
 }
 
 .position-chooser .chooser-button {
