@@ -24,11 +24,9 @@ import java.net.URL;
 public class PositionChooser extends Control {
     /**
      * The user can set here, whether the input field contains only the one value (e.g. the latitude),
-     * or both the latitude and longitude (in this case, set to true)
+     * or both the latitude and longitude (in this case, set to true).
      */
     private static final boolean COMPLEX_FIELD = true;
-    private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
-    private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
 
     /**
      * Each free API-Key  can make 25'000 Requests per month, more than enough for several 1000 implementations of this
@@ -37,10 +35,15 @@ public class PositionChooser extends Control {
      */
     static final String API_KEY = "1d044ccae845d20494b945d0ff37bedc";
 
-    /**
-     * The following section contains the whole code for the needed regex for input validation.
-     */
-     static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
+    private static final PseudoClass MANDATORY_CLASS = PseudoClass.getPseudoClass("mandatory");
+    private static final PseudoClass INVALID_CLASS = PseudoClass.getPseudoClass("invalid");
+
+
+    // --------------------------------------- //
+    // Section for regex for input validation: //
+    // --------------------------------------- //
+
+    static final String FORMATTED_DOUBLE_PATTERN = "%.5f";
     // The following regex accepts:
     //   \\s*     -> unlimited spaces in all the places
     //   (...)    -> groups 1 and 2 for separate extraction for latitude and longitude
@@ -60,9 +63,11 @@ public class PositionChooser extends Control {
 
     private static final Pattern COORDINATE_PATTERN = Pattern.compile(COORDINATE_REGEX);
 
-    /**
-     * All properties:
-     */
+
+    // -------------------------------- //
+    // Section with all the properties: //
+    // -------------------------------- //
+
     private final DoubleProperty latitude = new SimpleDoubleProperty();
     private final DoubleProperty longitude = new SimpleDoubleProperty();
     private final StringProperty city = new SimpleStringProperty();
@@ -86,6 +91,15 @@ public class PositionChooser extends Control {
     private final StringProperty label = new SimpleStringProperty();
     private final StringProperty errorMessage = new SimpleStringProperty();
 
+
+    // ------------------------------------------------- //
+    // Section for constructor, resetting, initializing, //
+    // updating, and value change listeners:             //
+    // ------------------------------------------------- //
+
+    /**
+     * Constructor
+     */
     public PositionChooser() {
         initializeSelf();
         addValueChangeListener();
@@ -113,6 +127,10 @@ public class PositionChooser extends Control {
         }
     }
 
+
+    /**
+     * Value change listeners:
+     */
     private void addValueChangeListener() {
         userFacingText.addListener((observable, oldValue, userInput) -> {
             if (isMandatory() && (userInput == null || userInput.isEmpty())) {
@@ -182,7 +200,6 @@ public class PositionChooser extends Control {
                         setInvalid(true);
                         setErrorMessage("invalid latitude / longitude ranges");
                     }
-
                 }
             } else {
                 setInvalid(true);
@@ -213,14 +230,22 @@ public class PositionChooser extends Control {
     }
 
 
-    public void setGeocodedValues(){
-            JSONObject data = getGeocodingJSON(getLatitude() + "," + getLongitude(), true);
-            if(data != null){
-                if(!data.isNull("name")) setCity((String) data.get("name")); //Standort
-                if(!data.isNull("administrative_area")) setRegion((String) data.get("administrative_area")); //Gemeinde
-                if(!data.isNull("region_code")) setCanton((String) data.get("region_code")); //Kanton
-            }
+    // ------------------ //
+    // Section geocoding: //
+    // ------------------ //
+
+    /**
+     * Extracting the relevant information from the JSONObject from the geocoding conversion:
+     */
+    public void setGeocodedValues() {
+        JSONObject data = getGeocodingJSON(getLatitude() + "," + getLongitude(), true);
+        if (data != null) {
+            if (!data.isNull("name")) setCity((String) data.get("name")); //Standort
+            if (!data.isNull("administrative_area")) setRegion((String) data.get("administrative_area")); //Gemeinde
+            if (!data.isNull("region_code")) setCanton((String) data.get("region_code")); //Kanton
+        }
     }
+
 
     /**
      * Geocoding conversion.
@@ -252,8 +277,7 @@ public class PositionChooser extends Control {
         if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader in = null;
             try {
-                in = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream()));
+                in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -284,6 +308,11 @@ public class PositionChooser extends Control {
         }
     }
 
+
+    // ----------------------------------  //
+    // Section for various helper methods: //
+    // ----------------------------------  //
+
     public void loadFonts(String... font) {
         for (String f : font) {
             Font.loadFont(getClass().getResourceAsStream(f), 0);
@@ -296,7 +325,6 @@ public class PositionChooser extends Control {
             getStylesheets().add(stylesheet);
         }
     }
-
 
     private boolean isCoordinate(String userInput) {
         return COORDINATE_PATTERN.matcher(userInput).matches();
@@ -319,9 +347,10 @@ public class PositionChooser extends Control {
     }
 
 
-    /**
-     * All getters and setters:
-     */
+    // -----------------------  //
+    // All getters and setters: //
+    // -----------------------  //
+
     public double getLatitude() {
         return round(latitude.get(), 5);
     }

@@ -23,26 +23,22 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 class PositionChooserSkin extends SkinBase<PositionChooser> {
-    private static final int IMG_SIZE   = 12;
+    private static final int IMG_SIZE = 12;
     private static final int IMG_OFFSET = 4;
 
-
     private static final String ANGLE_DOWN = "\uf107";
-    private static final String ANGLE_UP   = "\uf106";
+    private static final String ANGLE_UP = "\uf106";
 
     private enum State {
-        VALID("Valid",      "valid.png"),
-        INVALID("Invalid",  "invalid.png");
+        VALID("Valid", "valid.png"), INVALID("Invalid", "invalid.png");
 
-        public final String    text;
+        public final String text;
         public final ImageView imageView;
 
         State(final String text, final String file) {
             this.text = text;
             String url = PositionChooserSkin.class.getResource("/icons/" + file).toExternalForm();
-            this.imageView = new ImageView(new Image(url,
-                                                     IMG_SIZE, IMG_SIZE,
-                                                     true, false));
+            this.imageView = new ImageView(new Image(url, IMG_SIZE, IMG_SIZE, true, false));
         }
     }
 
@@ -50,16 +46,13 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
 
     // all parts
     private TextField editableNode;
-    private Label     readOnlyNode;
-    private Popup     popup;
-    private Pane      dropDownChooser;
-    private Button    chooserButton;
-
+    private Label readOnlyNode;
+    private Popup popup;
+    private Pane dropDownChooser;
+    private Button chooserButton;
     private StackPane drawingPane;
-
-    private Animation      invalidInputAnimation;
+    private Animation invalidInputAnimation;
     private FadeTransition fadeOutValidIconAnimation;
-
 
     PositionChooserSkin(PositionChooser control) {
         super(control);
@@ -73,7 +66,9 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
     }
 
     private void initializeSelf() {
-        getSkinnable().loadFonts("/fonts/Lato/Lato-Lig.ttf",  "/fonts/Lato/Lato-Reg.ttf", "/fonts/ds_digital/DS-DIGI.TTF", "/fonts/fontawesome-webfont.ttf");
+        getSkinnable()
+                .loadFonts("/fonts/Lato/Lato-Lig.ttf", "/fonts/Lato/Lato-Reg.ttf", "/fonts/ds_digital/DS-DIGI.TTF",
+                        "/fonts/fontawesome-webfont.ttf");
         getSkinnable().addStylesheetFiles(STYLE_CSS);
     }
 
@@ -96,20 +91,16 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
 
         drawingPane = new StackPane();
         drawingPane.getStyleClass().add("drawing-pane");
-
-
     }
 
     private void layoutParts() {
         StackPane.setAlignment(chooserButton, Pos.CENTER_RIGHT);
         drawingPane.getChildren().addAll(editableNode, chooserButton, readOnlyNode);
 
-        Arrays.stream(State.values())
-              .map(state -> state.imageView)
-              .forEach(imageView -> {
-                  imageView.setManaged(false);
-                  drawingPane.getChildren().add(imageView);
-              });
+        Arrays.stream(State.values()).map(state -> state.imageView).forEach(imageView -> {
+            imageView.setManaged(false);
+            drawingPane.getChildren().add(imageView);
+        });
 
         StackPane.setAlignment(editableNode, Pos.CENTER);
         StackPane.setAlignment(readOnlyNode, Pos.CENTER);
@@ -118,7 +109,7 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
     }
 
     private void setupAnimations() {
-        int      delta    = 5;
+        int delta = 5;
         Duration duration = Duration.millis(30);
 
         TranslateTransition moveRight = new TranslateTransition(duration, editableNode);
@@ -146,8 +137,6 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
 
     private void setupEventHandlers() {
         editableNode.setOnAction(ev -> getSkinnable().reset());
-
-
         chooserButton.setOnAction(event -> {
             if (popup.isShowing()) {
                 popup.hide();
@@ -161,7 +150,7 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
         popup.setOnShown(event -> {
             chooserButton.setText(ANGLE_UP);
             Point2D location = editableNode.localToScreen(editableNode.getWidth() - dropDownChooser.getPrefWidth() - 3,
-                                                          editableNode.getHeight() -3);
+                    editableNode.getHeight() - 3);
 
             popup.setX(location.getX());
             popup.setY(location.getY());
@@ -185,7 +174,8 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
     }
 
     private void setupBindings() {
-        readOnlyNode.textProperty().bind(getSkinnable().latitudeProperty().asString(PositionChooser.FORMATTED_DOUBLE_PATTERN));
+        readOnlyNode.textProperty()
+                .bind(getSkinnable().latitudeProperty().asString(PositionChooser.FORMATTED_DOUBLE_PATTERN));
 
         editableNode.textProperty().bindBidirectional(getSkinnable().userFacingTextProperty());
 
@@ -197,8 +187,10 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
 
         State.INVALID.imageView.visibleProperty().bind(getSkinnable().invalidProperty());
 
-        State.INVALID.imageView.xProperty().bind(editableNode.translateXProperty().add(editableNode.layoutXProperty()).subtract(IMG_OFFSET));
-        State.INVALID.imageView.yProperty().bind(editableNode.translateYProperty().add(editableNode.layoutYProperty()).subtract(IMG_OFFSET));
+        State.INVALID.imageView.xProperty()
+                .bind(editableNode.translateXProperty().add(editableNode.layoutXProperty()).subtract(IMG_OFFSET));
+        State.INVALID.imageView.yProperty()
+                .bind(editableNode.translateYProperty().add(editableNode.layoutYProperty()).subtract(IMG_OFFSET));
         State.VALID.imageView.xProperty().bind(editableNode.layoutXProperty().subtract(IMG_OFFSET));
         State.VALID.imageView.yProperty().bind(editableNode.layoutYProperty().subtract(IMG_OFFSET));
     }
@@ -217,8 +209,8 @@ class PositionChooserSkin extends SkinBase<PositionChooser> {
         invalidInputAnimation.play();
     }
 
-    private void loadFonts(String... font){
-        for(String f : font){
+    private void loadFonts(String... font) {
+        for (String f : font) {
             Font.loadFont(getClass().getResourceAsStream(f), 0);
         }
     }
