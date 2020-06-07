@@ -41,10 +41,10 @@ entsprechenden Werte (aus-)kommentiert.
 Koordinaten zentriert.
 *** Der Benutzer kann die Karte verschieben und zoomen und mittels Klick die Koordinaten neu setzen.
 ** Mit dem Button "*Autofill*" können automatisch weitere Felder wie Standort, Gemeinde und Kanton ausgefüllt werden,
-sofern entsprechende Daten in OpenStreetMap verfügbar sind.
+sofern entsprechende Daten in der Geocoding API verfügbar sind.
 *** Der/die OOP2-Student/in kann demzufolge auch ein Binding dieser drei Zusatzfelder vornehmen, falls er möchte.
-*** Hinweis: Wir benutzen das API von https://positionstack.com/ um auf
-die Daten von https://www.openstreetmap.org/ zuzugreifen.
+*** Hinweis: Wir benutzen das API von https://positionstack.com/ für das Reverse Geocoding und 
+https://www.openstreetmap.org/ für die Karte.
 ** Das *Eingabe-Feld* ermöglicht die Eingabe von *unterschiedlichen Formaten* und prüft jeweils die *Validität* dieser
 Eingabe. Die Eingabe wird, sobald sie valid ist, sofort übernommen und ua. auf der Karte aktualisiert. Mögliche Eingaben
 sind:
