@@ -9,6 +9,7 @@
 
 * *_Ergänzen Sie hier welche OOP2-Teams Ihr Projekt erfolgreich integriert haben._*
 
+image::assets/photo_2020-06-08_18-08-22.jpg
 
 === Feature-Liste und Tipps für die Integration
 * _Was wird ersetzt?_
