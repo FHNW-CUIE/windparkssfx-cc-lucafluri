@@ -3,8 +3,8 @@ image::./assets/qrcode.png[QR Code, 200, 273]
 
 === Bearbeitet von
 
-* Luca Fluri
-* Andreas Ambühl
+* Luca Fluri (luca.fluri@students.fhnw.ch)
+* Andreas Ambühl (andreas.ambuehl@students.fhnw.ch)
 
 === Integriert in die OOP2-Projekte von
 
