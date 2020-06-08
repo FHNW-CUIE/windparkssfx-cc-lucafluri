@@ -7,6 +7,7 @@ image::./assets/qrcode.png[QR Code, 200, 273]
 * Andreas Ambühl (andreas.ambuehl@students.fhnw.ch)
 
 === Integriert in die OOP2-Projekte von
+*MS Teams Link für Hilfe bei der Einbindung:* https://teams.microsoft.com/l/channel/19%3Ad495f2c0c9ec4a379b137452a857ef0d%40thread.tacv2/Bored%2540Home?groupId=d6c4f518-68e2-42a6-bf00-331505878b2f&tenantId=9d1a5fc8-321e-4101-ae63-530730711ac2[MS Teams Link]
 
 * *_Ergänzen Sie hier welche OOP2-Teams Ihr Projekt erfolgreich integriert haben._*
 
