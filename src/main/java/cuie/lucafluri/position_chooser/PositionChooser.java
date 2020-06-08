@@ -241,8 +241,11 @@ public class PositionChooser extends Control {
         JSONObject data = getGeocodingJSON(getLatitude() + "," + getLongitude(), true);
         if (data != null) {
             if (!data.isNull("name")) setCity((String) data.get("name")); //Standort
+            else setCity("");
             if (!data.isNull("administrative_area")) setRegion((String) data.get("administrative_area")); //Gemeinde
+            else setRegion("");
             if (!data.isNull("region_code")) setCanton((String) data.get("region_code")); //Kanton
+            else setCanton("");
         }
     }
 
