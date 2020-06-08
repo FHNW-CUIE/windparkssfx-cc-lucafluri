@@ -1,4 +1,4 @@
-image::./assets/qrcode.png[QR Code]
+image::./assets/qrcode.png[QR Code, 200, 273]
 == CUIE Abschlussprojekt
 
 === Bearbeitet von
