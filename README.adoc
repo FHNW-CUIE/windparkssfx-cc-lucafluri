@@ -9,6 +9,7 @@ image::./assets/qrcode.png[QR Code, 200, 273]
 === Integriert in die OOP2-Projekte von
 
 * Thomas Zürcher
+* Pascal Hostettler
 
 image::./assets/photo_2020-06-08_18-08-22.jpg[Screenshot, 500, 500]
 
