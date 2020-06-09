@@ -15,8 +15,7 @@ image::./assets/photo_2020-06-08_18-08-22.jpg[Screenshot, 500, 500]
 
 === Integration in oop2-Projekt
 * Lade das ZIP-File herunter von
-
-link:../../assets/windpark_position_addon.zip[./assets/windpark_position_addon.zip]
+link:../assets/windpark_position_addon.zip[../assets/windpark_position_addon.zip]
 * Kopiere alle Dateien in die entsprechenden Unter-Ordner:
 ** `src/main/java/oop2/lucafluri/position_chooser`
 ** `src/main/resources`
