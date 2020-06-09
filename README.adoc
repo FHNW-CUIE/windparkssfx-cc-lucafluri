@@ -12,6 +12,45 @@ image::./assets/qrcode.png[QR Code, 200, 273]
 
 image::./assets/photo_2020-06-08_18-08-22.jpg[Screenshot, 500, 500]
 
+=== Integration in oop2-Projekt
+* Lade das ZIP-File herunter von
+link:./assets/windpark_position_addon.zip[./assets/windpark_position_addon.zip]
+* Kopiere alle Dateien in die entsprechenden Unter-Ordner:
+** `src/main/java/oop2/lucafluri/position_chooser`
+** `src/main/resources`
+** `libs`
+** Du kannst die Dateien auch an andere Orte hinkopieren; dann musst du jedoch die Referenzen und Paketnamen in allen
+Dateien anpassen.
+* Ergänze in der Datei `build.gradle` folgende Zeilen im Bereich `dependencies { ... }`:
+```
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.fxmisc.cssfx:cssfx:11.2.1"
+    compile 'org.json:json:20171018'
+    compile 'com.sothawo:mapjfx:1.27.1'
+```
+* Falls du in der Datei `build.gradle` noch eine ältere Version als Java 13 angegeben hast, musst du die entsprechenden
+Zeilen noch anpassen (und ggf. noch das Java 13 Liberica Ful herunterladen):
+```
+compileJava {
+    options.encoding    = 'UTF-8'
+    sourceCompatibility = JavaVersion.VERSION_13
+    targetCompatibility = JavaVersion.VERSION_13
+}
+```
+* Dann in deiner DetailView.java:
+** Die zwei Felder latitute und longitude ersetzen durch unser Control, z.B. `private PositionChooser latLongField;`
+** Die Initialisierung der Felder anpassen
+** Bindings anpassen, z.B.:
+*** `latLongField.latitudeProperty().bindBidirectional(windpark.latitudeProperty());`
+*** `latLongField.longitudeProperty().bindBidirectional(windpark.longitudeProperty());`
+** Falls gewünscht noch changeListener definieren für Standort/Gemeinde/Kanton:
+*** `latLongField.cityProperty().addListener(...[deine Standort-Property]...);`
+*** `latLongField.regionProperty().addListener(...[dein Gemeinde-Property]...);`
+*** `latLongField.cantonProperty().addListener(...[dein Kantons-Property]...);`
+* Falls gewünscht Farben anpassen (siehe weiter unten)
+* Fertig
+
+
 === Feature-Liste und Tipps für die Integration
 * _Was wird ersetzt?_
 ** Mit unserem BusinessControl "PositionChooser" kann ein/eine OOP2-Student/in die beiden Felder _"Breitengrad" (Latitude)_ und
