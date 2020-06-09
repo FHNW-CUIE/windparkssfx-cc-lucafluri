@@ -8,7 +8,8 @@ image::./assets/qrcode.png[QR Code, 200, 273]
 
 === Integriert in die OOP2-Projekte von
 
-* *_Ergänzen Sie hier welche OOP2-Teams Ihr Projekt erfolgreich integriert haben._*
+* Thomas Zürcher
+* Pascal Hostettler
 
 image::./assets/photo_2020-06-08_18-08-22.jpg[Screenshot, 500, 500]
 
